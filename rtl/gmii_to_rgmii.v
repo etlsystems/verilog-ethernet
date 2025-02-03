@@ -53,7 +53,7 @@ module gmii_to_rgmii #
     // Rx
     input  wire        phy_rgmii_rx_clk,
     input  wire [3:0]  phy_rgmii_rxd,
-    input  wire        phy_rgmii_rx_ctl,
+    input  wire        phy_rgmii_rx_ctl
 
 );
 
