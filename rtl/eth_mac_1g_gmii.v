@@ -280,7 +280,7 @@ gmii_phy_if_inst (
     .phy_gmii_tx_en(gmii_tx_en),
     .phy_gmii_tx_er(gmii_tx_er),
 
-    .mii_select(mii_select_reg),
+    .mii_select(mii_select_reg)
 
 );
 
