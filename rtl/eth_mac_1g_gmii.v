@@ -96,11 +96,11 @@ module eth_mac_1g_gmii #
     output wire mii_odd_out,
     output wire in_frame_out,
     
-    output wire [DATA_WIDTH-1:0] gmii_rxd_d0_out,
-    output wire [DATA_WIDTH-1:0] gmii_rxd_d1_out,
-    output wire [DATA_WIDTH-1:0] gmii_rxd_d2_out,
-    output wire [DATA_WIDTH-1:0] gmii_rxd_d3_out,
-    output wire [DATA_WIDTH-1:0] gmii_rxd_d4_out,
+    output wire [7:0] gmii_rxd_d0_out,
+    output wire [7:0] gmii_rxd_d1_out,
+    output wire [7:0] gmii_rxd_d2_out,
+    output wire [7:0] gmii_rxd_d3_out,
+    output wire [7:0] gmii_rxd_d4_out,
     
     output wire gmii_rx_dv_d0_out,
     output wire gmii_rx_dv_d1_out,
@@ -114,8 +114,8 @@ module eth_mac_1g_gmii #
     output wire gmii_rx_er_d3_out,
     output wire gmii_rx_er_d4_out,
     
-    output wire [DATA_WIDTH-1:0] m_axis_tdata_reg_out,
-    output wire [DATA_WIDTH-1:0] m_axis_tdata_next_out,
+    output wire [7:0] m_axis_tdata_reg_out,
+    output wire [7:0] m_axis_tdata_next_out,
     output wire m_axis_tvalid_reg_out,
     output wire m_axis_tvalid_next_out,
     output wire m_axis_tlast_reg_out, 
@@ -123,14 +123,14 @@ module eth_mac_1g_gmii #
     output wire m_axis_tuser_reg_out, 
     output wire m_axis_tuser_next_out,
     
-    output wire tart_packet_int_reg_out,
+    output wire start_packet_int_reg_out,
     output wire start_packet_reg_out,
     output wire error_bad_frame_reg_out, 
     output wire error_bad_frame_next_out,
     output wire error_bad_fcs_reg_out,
     output wire error_bad_fcs_next_out,
     
-    output wire [PTP_TS_WIDTH-1:0] ptp_ts_reg_out,
+    output wire [31-1:0] ptp_ts_reg_out,
     
     output wire [31:0] crc_state_out,
     output wire [31:0] crc_next_out,
