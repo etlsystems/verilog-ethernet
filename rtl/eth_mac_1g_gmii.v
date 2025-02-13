@@ -79,6 +79,67 @@ module eth_mac_1g_gmii #
     input  wire [7:0]  gmii_rxd,
     input  wire        gmii_rx_dv,
     input  wire        gmii_rx_er,
+    // debug output
+    output  wire [7:0]  gmii_rxd_out,
+    output  wire        gmii_rx_dv_out,
+    output  wire        gmii_rx_er_out, 
+    output [7:0]  mac_gmii_rxd_out,
+    output        mac_gmii_rx_dv_out,
+    output        mac_gmii_rx_er_out,
+
+
+    output [2:0] state_reg_out,
+    output [2:0] state_next_out,
+    output reset_crc_out,
+    output update_crc_out,
+    
+    output mii_odd_out,
+    output in_frame_out,
+    
+    output [DATA_WIDTH-1:0] gmii_rxd_d0_out,
+    output [DATA_WIDTH-1:0] gmii_rxd_d1_out,
+    output [DATA_WIDTH-1:0] gmii_rxd_d2_out,
+    output [DATA_WIDTH-1:0] gmii_rxd_d3_out,
+    output [DATA_WIDTH-1:0] gmii_rxd_d4_out,
+    
+    output gmii_rx_dv_d0_out,
+    output gmii_rx_dv_d1_out,
+    output gmii_rx_dv_d2_out,
+    output gmii_rx_dv_d3_out,
+    output gmii_rx_dv_d4_out,
+    
+    output gmii_rx_er_d0_out,
+    output gmii_rx_er_d1_out,
+    output gmii_rx_er_d2_out,
+    output gmii_rx_er_d3_out,
+    output gmii_rx_er_d4_out,
+    
+    output [DATA_WIDTH-1:0] m_axis_tdata_reg_out,
+    output [DATA_WIDTH-1:0] m_axis_tdata_next_out,
+    output m_axis_tvalid_reg_out,
+    output m_axis_tvalid_next_out,
+    output m_axis_tlast_reg_out, 
+    output m_axis_tlast_next_out,
+    output m_axis_tuser_reg_out, 
+    output m_axis_tuser_next_out,
+    
+    output start_packet_int_reg_out,
+    output start_packet_reg_out,
+    output error_bad_frame_reg_out, 
+    output error_bad_frame_next_out,
+    output error_bad_fcs_reg_out,
+    output error_bad_fcs_next_out,
+    
+    output [PTP_TS_WIDTH-1:0] ptp_ts_reg_out,
+    
+    output [31:0] crc_state_out,
+    output [31:0] crc_next_out,
+
+    output clk_enable_out,
+    output mii_select_out,
+    
+    output cfg_rx_enable_out,   
+   
     input  wire        mii_tx_clk,
     output wire        gmii_tx_clk,
     output wire [7:0]  gmii_txd,
@@ -108,6 +169,13 @@ wire [7:0]  mac_gmii_txd;
 wire        mac_gmii_tx_en;
 wire        mac_gmii_tx_er;
 
+
+assign gmii_rxd_out =gmii_rxd; 
+assign gmii_rx_dv_out=gmii_rx_dv;
+assign gmii_rx_er_out=gmii_rx_er; 
+assign mac_gmii_rxd_out = mac_gmii_rxd;
+assign mac_gmii_rx_dv_out = mac_gmii_rx_dv; 
+assign mac_gmii_rx_er_out = mac_gmii_rx_er;
 reg [1:0] speed_reg = 2'b10;
 reg mii_select_reg = 1'b0;
 
@@ -212,7 +280,8 @@ gmii_phy_if_inst (
     .phy_gmii_tx_en(gmii_tx_en),
     .phy_gmii_tx_er(gmii_tx_er),
 
-    .mii_select(mii_select_reg)
+    .mii_select(mii_select_reg),
+
 );
 
 eth_mac_1g #(
@@ -248,7 +317,54 @@ eth_mac_1g_inst (
     .rx_error_bad_fcs(rx_error_bad_fcs),
     .cfg_ifg(cfg_ifg),
     .cfg_tx_enable(cfg_tx_enable),
-    .cfg_rx_enable(cfg_rx_enable)
+    .cfg_rx_enable(cfg_rx_enable),
+    .state_reg_out(state_reg_out),
+    .state_next_out(state_next_out),
+    .reset_crc_out(reset_crc_out),
+    .update_crc_out(update_crc_out),
+    
+    .mii_odd_out(mii_odd_out),
+    .in_frame_out(in_frame_out),
+    
+    .gmii_rxd_d0_out(gmii_rxd_d0_out),
+    .gmii_rxd_d1_out(gmii_rxd_d1_out),
+    .gmii_rxd_d2_out(gmii_rxd_d2_out),
+    .gmii_rxd_d3_out(gmii_rxd_d3_out),
+    .gmii_rxd_d4_out(gmii_rxd_d4_out),
+    
+    .gmii_rx_dv_d0_out(gmii_rx_dv_d0_out),
+    .gmii_rx_dv_d1_out(gmii_rx_dv_d1_out),
+    .gmii_rx_dv_d2_out(gmii_rx_dv_d2_out),
+    .gmii_rx_dv_d3_out(gmii_rx_dv_d3_out),
+    .gmii_rx_dv_d4_out(gmii_rx_dv_d4_out),
+    
+    .gmii_rx_er_d0_out(gmii_rx_er_d0_out),
+    .gmii_rx_er_d1_out(gmii_rx_er_d1_out),
+    .gmii_rx_er_d2_out(gmii_rx_er_d2_out),
+    .gmii_rx_er_d3_out(gmii_rx_er_d3_out),
+    .gmii_rx_er_d4_out(gmii_rx_er_d4_out),
+    
+    .m_axis_tdata_reg_out(m_axis_tdata_reg_out),
+    .m_axis_tdata_next_out(m_axis_tdata_next_out),
+    .m_axis_tvalid_reg_out(m_axis_tvalid_reg_out),
+    .m_axis_tvalid_next_out(m_axis_tvalid_next_out),
+    .m_axis_tlast_reg_out(m_axis_tlast_reg_out), 
+    .m_axis_tlast_next_out(m_axis_tlast_next_out),
+    .m_axis_tuser_reg_out(m_axis_tuser_reg_out), 
+    .m_axis_tuser_next_out(m_axis_tuser_next_out),
+    
+    .start_packet_int_reg_out(start_packet_int_reg_out),
+    .start_packet_reg_out(start_packet_reg_out),
+    .error_bad_frame_reg_out(error_bad_frame_reg_out), 
+    .error_bad_frame_next_out(error_bad_frame_next_out),
+    .error_bad_fcs_reg_out(error_bad_fcs_reg_out),
+    .error_bad_fcs_next_out(error_bad_fcs_next_out),
+    .ptp_ts_reg_out(ptp_ts_reg_out),
+    .crc_state_out(crc_state_out),
+    .crc_next_out(crc_next_out),
+    .clk_enable_out(clk_enable_out),
+    .mii_select_out(mii_select_out),
+    .cfg_rx_enable_out(cfg_rx_enable_out)   
 );
 
 endmodule
