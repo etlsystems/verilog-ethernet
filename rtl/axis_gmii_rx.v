@@ -251,7 +251,7 @@ wire [31:0] crc_next;
     /*
      * Configuration
      */
-    output cfg_rx_enable_out = cfg_rx_enable;
+    assign cfg_rx_enable_out = cfg_rx_enable;
 
 
 
