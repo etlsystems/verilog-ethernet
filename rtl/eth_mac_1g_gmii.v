@@ -251,7 +251,7 @@ end
 
 assign speed = speed_reg;
 
-gmii_phy_if #(
+/*gmii_phy_if #(
     .TARGET(TARGET),
     .IODDR_STYLE(IODDR_STYLE),
     .CLOCK_INPUT_STYLE(CLOCK_INPUT_STYLE)
@@ -283,16 +283,16 @@ gmii_phy_if_inst (
 
     .mii_select(mii_select_reg)
 
-);
+);*/
 
 eth_mac_1g #(
     .ENABLE_PADDING(ENABLE_PADDING),
     .MIN_FRAME_LENGTH(MIN_FRAME_LENGTH)
 )
 eth_mac_1g_inst (
-    .tx_clk(tx_clk),
+    .tx_clk(gmii_tx_clk),
     .tx_rst(tx_rst),
-    .rx_clk(rx_clk),
+    .rx_clk(gmii_rx_clk),
     .rx_rst(rx_rst),
     .tx_axis_tdata(tx_axis_tdata),
     .tx_axis_tvalid(tx_axis_tvalid),
@@ -303,12 +303,12 @@ eth_mac_1g_inst (
     .rx_axis_tvalid(rx_axis_tvalid),
     .rx_axis_tlast(rx_axis_tlast),
     .rx_axis_tuser(rx_axis_tuser),
-    .gmii_rxd(mac_gmii_rxd),
-    .gmii_rx_dv(mac_gmii_rx_dv),
-    .gmii_rx_er(mac_gmii_rx_er),
-    .gmii_txd(mac_gmii_txd),
-    .gmii_tx_en(mac_gmii_tx_en),
-    .gmii_tx_er(mac_gmii_tx_er),
+    .gmii_rxd(gmii_rxd),
+    .gmii_rx_dv(gmii_rx_dv),
+    .gmii_rx_er(gmii_rx_er),
+    .gmii_txd(gmii_txd),
+    .gmii_tx_en(gmii_tx_en),
+    .gmii_tx_er(gmii_tx_er),
     .rx_clk_enable(1'b1),
     .tx_clk_enable(1'b1),
     .rx_mii_select(rx_mii_select_sync[1]),
