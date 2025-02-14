@@ -80,12 +80,12 @@ module eth_mac_1g_gmii #
     input  wire        gmii_rx_dv,
     input  wire        gmii_rx_er,
     // debug output
-    output  wire [7:0]  gmii_rxd_out,
-    output  wire        gmii_rx_dv_out,
-    output  wire        gmii_rx_er_out, 
-    output wire [7:0]  mac_gmii_rxd_out,
-    output wire       mac_gmii_rx_dv_out,
-    output wire       mac_gmii_rx_er_out,
+    output  reg [7:0]  gmii_rxd_out,
+    output  reg        gmii_rx_dv_out,
+    output  reg        gmii_rx_er_out, 
+    output reg [7:0]  mac_gmii_rxd_out,
+    output reg       mac_gmii_rx_dv_out,
+    output reg       mac_gmii_rx_er_out,
 
 
     output wire [2:0] state_reg_out,
@@ -168,13 +168,15 @@ wire        mac_gmii_rx_er;
 wire [7:0]  mac_gmii_txd;
 wire        mac_gmii_tx_en;
 wire        mac_gmii_tx_er;
+always @(posedge rx_clk) begin
+    gmii_rxd_out<=gmii_rxd;
+    gmii_rx_dv_out<=gmii_rx_dv;
+    gmii_rx_er_out<=gmii_rx_er; 
+    mac_gmii_rxd_out<=mac_gmii_rxd;
+    mac_gmii_rx_dv_out<=mac_gmii_rx_dv;
+    mac_gmii_rx_er_out<=mac_gmii_rx_er;
+end
 
-assign gmii_rxd_out =gmii_rxd; 
-assign gmii_rx_dv_out=gmii_rx_dv;
-assign gmii_rx_er_out=gmii_rx_er; 
-assign mac_gmii_rxd_out = mac_gmii_rxd;
-assign mac_gmii_rx_dv_out = mac_gmii_rx_dv; 
-assign mac_gmii_rx_er_out = mac_gmii_rx_er;
 reg [1:0] speed_reg = 2'b10;
 reg mii_select_reg = 1'b0;
 
