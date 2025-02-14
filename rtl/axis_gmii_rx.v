@@ -246,7 +246,7 @@ wire [31:0] crc_next;
     assign crc_next_out = crc_next;
 
     assign clk_enable_out = clk_enable;
-    assign mii_select_out = mii_select;
+    assign mii_select_out = rst;
 
     /*
      * Configuration
