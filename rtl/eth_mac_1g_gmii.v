@@ -169,7 +169,6 @@ wire [7:0]  mac_gmii_txd;
 wire        mac_gmii_tx_en;
 wire        mac_gmii_tx_er;
 
-
 assign gmii_rxd_out =gmii_rxd; 
 assign gmii_rx_dv_out=gmii_rx_dv;
 assign gmii_rx_er_out=gmii_rx_er; 
