@@ -291,9 +291,9 @@ eth_mac_1g #(
 )
 eth_mac_1g_inst (
     .tx_clk(gmii_tx_clk),
-    .tx_rst('0),
+    .tx_rst(1'b0),
     .rx_clk(gmii_rx_clk),
-    .rx_rst('0),
+    .rx_rst(1'b0),
     .tx_axis_tdata(tx_axis_tdata),
     .tx_axis_tvalid(tx_axis_tvalid),
     .tx_axis_tready(tx_axis_tready),
