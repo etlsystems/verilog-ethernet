@@ -45,7 +45,8 @@ module eth_mac_1g #
     parameter TX_USER_WIDTH = (PTP_TS_ENABLE ? (TX_PTP_TAG_ENABLE ? TX_PTP_TAG_WIDTH : 0) + (TX_PTP_TS_CTRL_IN_TUSER ? 1 : 0) : 0) + 1,
     parameter RX_USER_WIDTH = (PTP_TS_ENABLE ? PTP_TS_WIDTH : 0) + 1,
     parameter PFC_ENABLE = 0,
-    parameter PAUSE_ENABLE = PFC_ENABLE
+    parameter PAUSE_ENABLE = PFC_ENABLE,
+    parameter EXCLUDE_CRC = 0
 )
 (
     input  wire                         rx_clk,
@@ -206,7 +207,8 @@ axis_gmii_rx #(
     .DATA_WIDTH(DATA_WIDTH),
     .PTP_TS_ENABLE(PTP_TS_ENABLE),
     .PTP_TS_WIDTH(PTP_TS_WIDTH),
-    .USER_WIDTH(RX_USER_WIDTH)
+    .USER_WIDTH(RX_USER_WIDTH),
+    .EXCLUDE_CRC(EXCLUDE_CRC)
 )
 axis_gmii_rx_inst (
     .clk(rx_clk),
