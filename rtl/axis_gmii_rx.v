@@ -36,6 +36,7 @@ module axis_gmii_rx #
     parameter DATA_WIDTH = 8,
     parameter PTP_TS_ENABLE = 0,
     parameter PTP_TS_WIDTH = 96,
+    parameter EXCLUDE_CRC = 0,
     parameter USER_WIDTH = (PTP_TS_ENABLE ? PTP_TS_WIDTH : 0) + 1
 )
 (
@@ -144,10 +145,10 @@ reg [PTP_TS_WIDTH-1:0] ptp_ts_reg = 0;
 reg [31:0] crc_state = 32'hFFFFFFFF;
 wire [31:0] crc_next;
 
-assign m_axis_tdata = m_axis_tdata_reg[(5*DATA_WIDTH)-1:4*DATA_WIDTH];
-assign m_axis_tvalid = m_axis_tvalid_reg[4] & ~(|m_axis_tlast_reg[4:1]);
-assign m_axis_tlast = m_axis_tlast_reg[0];
-assign m_axis_tuser = PTP_TS_ENABLE ? {ptp_ts_reg, m_axis_tuser_reg[4]} : m_axis_tuser_reg[4];
+assign m_axis_tdata  = EXCLUDE_CRC ? m_axis_tdata_reg[(5*DATA_WIDTH)-1:4*DATA_WIDTH]  : m_axis_tdata_reg[DATA_WIDTH-1:0];
+assign m_axis_tvalid = EXCLUDE_CRC ? m_axis_tvalid_reg[4] & ~(|m_axis_tlast_reg[4:1]) : m_axis_tvalid_reg[0];
+assign m_axis_tlast  = m_axis_tlast_reg[0];
+assign m_axis_tuser  = PTP_TS_ENABLE ? {ptp_ts_reg, EXCLUDE_CRC? m_axis_tuser_reg[4] : m_axis_tuser_reg[0]} : (EXCLUDE_CRC ? m_axis_tuser_reg[4] : m_axis_tuser_reg[0]);
 
 assign start_packet = start_packet_reg;
 assign error_bad_frame = error_bad_frame_reg;
