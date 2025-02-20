@@ -125,7 +125,7 @@ reg gmii_rx_er_d2 = 1'b0;
 reg gmii_rx_er_d3 = 1'b0;
 reg gmii_rx_er_d4 = 1'b0;
 
-reg [DATA_WIDTH-1:0] m_axis_tdata_reg [4:0];
+reg [(5*DATA_WIDTH)-1:0] m_axis_tdata_reg;
 reg [DATA_WIDTH-1:0] m_axis_tdata_next;
 reg [4:0] m_axis_tvalid_reg = 5'b0;
 reg m_axis_tvalid_next;
@@ -144,7 +144,7 @@ reg [PTP_TS_WIDTH-1:0] ptp_ts_reg = 0;
 reg [31:0] crc_state = 32'hFFFFFFFF;
 wire [31:0] crc_next;
 
-assign m_axis_tdata = m_axis_tdata_reg[4];
+assign m_axis_tdata = m_axis_tdata_reg[(5*DATA_WIDTH)-1:4*DATA_WIDTH];
 assign m_axis_tvalid = m_axis_tvalid_reg[4] & ~(|m_axis_tlast_reg[4:1]);
 assign m_axis_tlast = m_axis_tlast_reg[0];
 assign m_axis_tuser = PTP_TS_ENABLE ? {ptp_ts_reg, m_axis_tuser_reg[4]} : m_axis_tuser_reg[4];
@@ -251,7 +251,7 @@ end
 always @(posedge clk) begin
     state_reg <= state_next;
 
-    m_axis_tdata_reg  <= {m_axis_tdata_reg[3:0],m_axis_tdata_next};
+    m_axis_tdata_reg  <= {m_axis_tdata_reg[(4*DATA_WIDTH)-1:0],m_axis_tdata_next};
     m_axis_tvalid_reg <= {m_axis_tvalid_reg[3:0],m_axis_tvalid_next};
     m_axis_tlast_reg  <= {m_axis_tlast_reg[3:0],m_axis_tlast_next};
     m_axis_tuser_reg  <= {m_axis_tuser_reg[3:0],m_axis_tuser_next};
