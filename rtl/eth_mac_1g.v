@@ -48,10 +48,8 @@ module eth_mac_1g #
     parameter PAUSE_ENABLE = PFC_ENABLE
 )
 (
-    input  wire                         rx_clk,
-    input  wire                         rx_rst,
     input  wire                         tx_clk,
-    input  wire                         tx_rst,
+    
 
     /*
      * AXI input
@@ -73,14 +71,21 @@ module eth_mac_1g #
     /*
      * GMII interface
      */
-    input  wire [DATA_WIDTH-1:0]        gmii_rxd,
-    input  wire                         gmii_rx_dv,
-    input  wire                         gmii_rx_er,
-    output wire [DATA_WIDTH-1:0]        gmii_txd,
-    output wire                         gmii_tx_en,
-    output wire                         gmii_tx_er,
+     (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME mac_gmii, CAN_DEBUG false" *)
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 gmii RX_CLK" *)   input  wire                  gmii_rx_clk,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 gmii RXD" *)      input  wire [DATA_WIDTH-1:0] gmii_rxd,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 gmii RX_DV" *)    input  wire                  gmii_rx_dv,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 gmii RX_ER" *)    input  wire                  gmii_rx_er,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 gmii GTX_CLK" *)  output wire                  gmii_gtx_clk,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 gmii TXD" *)      output wire [DATA_WIDTH-1:0] gmii_txd,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 gmii TX_EN" *)    output wire                  gmii_tx_en,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 gmii TX_ER" *)    output wire                  gmii_tx_er,
+    // Non standard gmii
+    input  wire gmii_rx_rst,
+    input  wire gmii_tx_rst,
 
     /*
+
      * PTP
      */
     input  wire [PTP_TS_WIDTH-1:0]      tx_ptp_ts,
@@ -202,6 +207,7 @@ wire                      rx_axis_tvalid_int;
 wire                      rx_axis_tlast_int;
 wire [RX_USER_WIDTH-1:0]  rx_axis_tuser_int;
 
+assign gmii_gtx_clk = tx_clk;
 axis_gmii_rx #(
     .DATA_WIDTH(DATA_WIDTH),
     .PTP_TS_ENABLE(PTP_TS_ENABLE),
@@ -209,8 +215,8 @@ axis_gmii_rx #(
     .USER_WIDTH(RX_USER_WIDTH)
 )
 axis_gmii_rx_inst (
-    .clk(rx_clk),
-    .rst(rx_rst),
+    .clk(gmii_rx_clk),
+    .rst(gmii_rx_rst),
     .gmii_rxd(gmii_rxd),
     .gmii_rx_dv(gmii_rx_dv),
     .gmii_rx_er(gmii_rx_er),
@@ -239,8 +245,8 @@ axis_gmii_tx #(
     .USER_WIDTH(TX_USER_WIDTH_INT)
 )
 axis_gmii_tx_inst (
-    .clk(tx_clk),
-    .rst(tx_rst),
+    .clk(gmii_gtx_clk),
+    .rst(gmii_tx_rst),
     .s_axis_tdata(tx_axis_tdata_int),
     .s_axis_tvalid(tx_axis_tvalid_int),
     .s_axis_tready(tx_axis_tready_int),
@@ -290,16 +296,16 @@ if (MAC_CTRL_ENABLE) begin : mac_ctrl
     reg tx_lfc_req_sync_reg_2 = 1'b0;
     reg tx_lfc_req_sync_reg_3 = 1'b0;
 
-    always @(posedge rx_clk or posedge rx_rst) begin
-        if (rx_rst) begin
+    always @(posedge gmii_rx_clk or posedge gmii_rx_rst) begin
+        if (gmii_rx_rst) begin
             tx_lfc_req_sync_reg_1 <= 1'b0;
         end else begin
             tx_lfc_req_sync_reg_1 <= rx_lfc_req;
         end
     end
 
-    always @(posedge tx_clk or posedge tx_rst) begin
-        if (tx_rst) begin
+    always @(posedge gmii_gtx_clk or posedge gmii_tx_rst) begin
+        if (gmii_tx_rst) begin
             tx_lfc_req_sync_reg_2 <= 1'b0;
             tx_lfc_req_sync_reg_3 <= 1'b0;
         end else begin
@@ -312,16 +318,16 @@ if (MAC_CTRL_ENABLE) begin : mac_ctrl
     reg rx_lfc_ack_sync_reg_2 = 1'b0;
     reg rx_lfc_ack_sync_reg_3 = 1'b0;
 
-    always @(posedge tx_clk or posedge tx_rst) begin
-        if (tx_rst) begin
+    always @(posedge gmii_gtx_clk or posedge gmii_tx_rst) begin
+        if (gmii_tx_rst) begin
             rx_lfc_ack_sync_reg_1 <= 1'b0;
         end else begin
             rx_lfc_ack_sync_reg_1 <= tx_lfc_pause_en ? tx_pause_ack : 0;
         end
     end
 
-    always @(posedge rx_clk or posedge rx_rst) begin
-        if (rx_rst) begin
+    always @(posedge gmii_rx_clk or posedge gmii_rx_rst) begin
+        if (gmii_rx_rst) begin
             rx_lfc_ack_sync_reg_2 <= 1'b0;
             rx_lfc_ack_sync_reg_3 <= 1'b0;
         end else begin
@@ -353,8 +359,8 @@ if (MAC_CTRL_ENABLE) begin : mac_ctrl
         .MCF_PARAMS_SIZE(MCF_PARAMS_SIZE)
     )
     mac_ctrl_tx_inst (
-        .clk(tx_clk),
-        .rst(tx_rst),
+        .clk(gmii_gtx_clk),
+        .rst(gmii_tx_rst),
 
         /*
          * AXI stream input
@@ -417,8 +423,8 @@ if (MAC_CTRL_ENABLE) begin : mac_ctrl
         .MCF_PARAMS_SIZE(MCF_PARAMS_SIZE)
     )
     mac_ctrl_rx_inst (
-        .clk(rx_clk),
-        .rst(rx_rst),
+        .clk(gmii_rx_clk),
+        .rst(gmii_rx_rst),
 
         /*
          * AXI stream input
@@ -485,8 +491,8 @@ if (MAC_CTRL_ENABLE) begin : mac_ctrl
         .PFC_ENABLE(PFC_ENABLE)
     )
     mac_pause_ctrl_tx_inst (
-        .clk(tx_clk),
-        .rst(tx_rst),
+        .clk(gmii_gtx_clk),
+        .rst(gmii_tx_rst),
 
         /*
          * MAC control frame interface
@@ -549,8 +555,8 @@ if (MAC_CTRL_ENABLE) begin : mac_ctrl
         .PFC_ENABLE(PFC_ENABLE)
     )
     mac_pause_ctrl_rx_inst (
-        .clk(rx_clk),
-        .rst(rx_rst),
+        .clk(gmii_rx_clk),
+        .rst(gmii_rx_rst),
 
         /*
          * MAC control frame interface
