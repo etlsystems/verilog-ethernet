@@ -49,8 +49,10 @@ module eth_mac_1g #
 )
 (
     input  wire                         tx_clk,
-    
 
+    // Copy of rx clock to appease xilinx interfaces
+    output  wire                         rx_axis_clk, 
+    
     /*
      * AXI input
      */
@@ -208,6 +210,8 @@ wire                      rx_axis_tlast_int;
 wire [RX_USER_WIDTH-1:0]  rx_axis_tuser_int;
 
 assign gmii_gtx_clk = tx_clk;
+assign rx_axis_clk = gmii_rx_clk;
+
 axis_gmii_rx #(
     .DATA_WIDTH(DATA_WIDTH),
     .PTP_TS_ENABLE(PTP_TS_ENABLE),
