@@ -111,7 +111,7 @@ reg rgmii_tx_clk_1 = 1'b1;
 reg rgmii_tx_clk_2 = 1'b0;
 reg rgmii_tx_clk_en = 1'b1;
 
-reg [5:0] count_reg = 6'd0, count_next;
+reg [5:0] count_reg = 6'd0;
 
 always @(posedge clk) begin
     rgmii_tx_clk_1 <= rgmii_tx_clk_2;
@@ -196,10 +196,6 @@ always @* begin
         gmii_clk_en = 1;
     end
 end
-
-wire phy_rgmii_tx_clk_new;
-wire [3:0] phy_rgmii_txd_new;
-wire phy_rgmii_tx_ctl_new;
 
 oddr #(
     .TARGET(TARGET),
