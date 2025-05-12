@@ -189,8 +189,8 @@ rgmii_phy_if #(
     .USE_CLK90(USE_CLK90)
 )
 rgmii_phy_if_inst (
-    .clk(gtx_clk),
-    .clk90(gtx_clk90),
+    .mac_gmii_gtx_clk(gtx_clk),
+    .mac_gmii_gtx_clk_90(gtx_clk90),
     .rst(gtx_rst),
 
     .mac_gmii_rx_clk(rx_clk),
@@ -198,22 +198,23 @@ rgmii_phy_if_inst (
     .mac_gmii_rxd(mac_gmii_rxd),
     .mac_gmii_rx_dv(mac_gmii_rx_dv),
     .mac_gmii_rx_er(mac_gmii_rx_er),
-    .mac_gmii_tx_clk(tx_clk),
     .mac_gmii_tx_rst(tx_rst),
     .mac_gmii_tx_clk_en(mac_gmii_tx_clk_en),
     .mac_gmii_txd(mac_gmii_txd),
     .mac_gmii_tx_en(mac_gmii_tx_en),
     .mac_gmii_tx_er(mac_gmii_tx_er),
 
-    .phy_rgmii_rx_clk(rgmii_rx_clk),
-    .phy_rgmii_rxd(rgmii_rxd),
+    .phy_rgmii_rxc(rgmii_rx_clk),
+    .phy_rgmii_rd(rgmii_rxd),
     .phy_rgmii_rx_ctl(rgmii_rx_ctl),
-    .phy_rgmii_tx_clk(rgmii_tx_clk),
-    .phy_rgmii_txd(rgmii_txd),
+    .phy_rgmii_txc(rgmii_tx_clk),
+    .phy_rgmii_td(rgmii_txd),
     .phy_rgmii_tx_ctl(rgmii_tx_ctl),
 
     .speed(speed)
 );
+
+assign tx_clk = gtx_clk;
 
 eth_mac_1g #(
     .ENABLE_PADDING(ENABLE_PADDING),

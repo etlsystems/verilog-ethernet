@@ -47,24 +47,27 @@ module rgmii_phy_if #
     parameter USE_CLK90 = "TRUE"
 )
 (
-    input  wire        clk,
-    input  wire        clk90,
+    // Reset, synchronous to mac_gmii_gtx_clk
     input  wire        rst,
 
     /*
      * GMII interface to MAC
      */
-    output wire        mac_gmii_rx_clk,
+    (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME mac_gmii, CAN_DEBUG false" *)
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 mac_gmii RX_CLK" *)  output wire        mac_gmii_rx_clk,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 mac_gmii RXD" *)     output wire [7:0]  mac_gmii_rxd,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 mac_gmii RX_DV" *)   output wire        mac_gmii_rx_dv,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 mac_gmii RX_ER" *)   output wire        mac_gmii_rx_er,
+
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 mac_gmii GTX_CLK" *) input wire         mac_gmii_gtx_clk,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 mac_gmii TXD" *)     input  wire [7:0]  mac_gmii_txd,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 mac_gmii TX_EN" *)   input  wire        mac_gmii_tx_en,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 mac_gmii TX_ER" *)   input  wire        mac_gmii_tx_er,
+    // These are non-standard gmii signals to control the MAC
+    input  wire        mac_gmii_gtx_clk_90,
     output wire        mac_gmii_rx_rst,
-    output wire [7:0]  mac_gmii_rxd,
-    output wire        mac_gmii_rx_dv,
-    output wire        mac_gmii_rx_er,
-    output wire        mac_gmii_tx_clk,
     output wire        mac_gmii_tx_rst,
     output wire        mac_gmii_tx_clk_en,
-    input  wire [7:0]  mac_gmii_txd,
-    input  wire        mac_gmii_tx_en,
-    input  wire        mac_gmii_tx_er,
 
     /*
      * RGMII interface to PHY
@@ -80,8 +83,13 @@ module rgmii_phy_if #
     /*
      * Control
      */
+     // 2'b10: 1G
+     // 2'b01: 100M
+     // 2'b00: 10M
     input  wire [1:0]  speed
 );
+
+wire clk;
 
 // receive
 
@@ -204,7 +212,7 @@ oddr #(
     .WIDTH(1)
 )
 clk_oddr_inst (
-    .clk(USE_CLK90 == "TRUE" ? clk90 : clk),
+    .clk(USE_CLK90 == "TRUE" ? mac_gmii_gtx_clk_90 : clk),
     .d1(rgmii_tx_clk_1),
     .d2(rgmii_tx_clk_2),
     .q(phy_rgmii_txc)
@@ -222,7 +230,7 @@ data_oddr_inst (
     .q({phy_rgmii_td, phy_rgmii_tx_ctl})
 );
 
-assign mac_gmii_tx_clk = clk;
+assign clk = mac_gmii_gtx_clk;
 
 assign mac_gmii_tx_clk_en = gmii_clk_en;
 
@@ -230,7 +238,7 @@ assign mac_gmii_tx_clk_en = gmii_clk_en;
 reg [3:0] tx_rst_reg = 4'hf;
 assign mac_gmii_tx_rst = tx_rst_reg[0];
 
-always @(posedge mac_gmii_tx_clk or posedge rst) begin
+always @(posedge clk or posedge rst) begin
     if (rst) begin
         tx_rst_reg <= 4'hf;
     end else begin
