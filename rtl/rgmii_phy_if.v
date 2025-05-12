@@ -69,12 +69,13 @@ module rgmii_phy_if #
     /*
      * RGMII interface to PHY
      */
-    input  wire        phy_rgmii_rx_clk,
-    input  wire [3:0]  phy_rgmii_rxd,
-    input  wire        phy_rgmii_rx_ctl,
-    output wire        phy_rgmii_tx_clk,
-    output wire [3:0]  phy_rgmii_txd,
-    output wire        phy_rgmii_tx_ctl,
+    (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME phy_rgmii, CAN_DEBUG false" *)
+    (* X_INTERFACE_INFO = "xilinx.com:interface:rgmii_rtl:1.0 phy_rgmii RXC" *)    input  wire        phy_rgmii_rxc,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:rgmii_rtl:1.0 phy_rgmii RD" *)     input  wire [3:0]  phy_rgmii_rd,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:rgmii_rtl:1.0 phy_rgmii RX_CTL" *) input  wire        phy_rgmii_rx_ctl,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:rgmii_rtl:1.0 phy_rgmii TXC" *)    output wire        phy_rgmii_txc,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:rgmii_rtl:1.0 phy_rgmii TD" *)     output wire [3:0]  phy_rgmii_td,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:rgmii_rtl:1.0 phy_rgmii TX_CTL" *) output wire        phy_rgmii_tx_ctl,
 
     /*
      * Control
@@ -95,8 +96,8 @@ ssio_ddr_in #
     .WIDTH(5)
 )
 rx_ssio_ddr_inst (
-    .input_clk(phy_rgmii_rx_clk),
-    .input_d({phy_rgmii_rxd, phy_rgmii_rx_ctl}),
+    .input_clk(phy_rgmii_rxc),
+    .input_d({phy_rgmii_rd, phy_rgmii_rx_ctl}),
     .output_clk(mac_gmii_rx_clk),
     .output_q1({mac_gmii_rxd[3:0], rgmii_rx_ctl_1}),
     .output_q2({mac_gmii_rxd[7:4], rgmii_rx_ctl_2})
@@ -206,7 +207,7 @@ clk_oddr_inst (
     .clk(USE_CLK90 == "TRUE" ? clk90 : clk),
     .d1(rgmii_tx_clk_1),
     .d2(rgmii_tx_clk_2),
-    .q(phy_rgmii_tx_clk)
+    .q(phy_rgmii_txc)
 );
 
 oddr #(
@@ -218,7 +219,7 @@ data_oddr_inst (
     .clk(clk),
     .d1({rgmii_txd_1, rgmii_tx_ctl_1}),
     .d2({rgmii_txd_2, rgmii_tx_ctl_2}),
-    .q({phy_rgmii_txd, phy_rgmii_tx_ctl})
+    .q({phy_rgmii_td, phy_rgmii_tx_ctl})
 );
 
 assign mac_gmii_tx_clk = clk;
