@@ -40,7 +40,8 @@ module iddr #
     // Use IODDR2 for Spartan-6
     parameter IODDR_STYLE = "IODDR2",
     // Width of register in bits
-    parameter WIDTH = 1
+    parameter WIDTH = 1,
+    parameter INSERT_BUFFERS = "FALSE"
 )
 (
     input  wire             clk,
@@ -64,10 +65,21 @@ Provides a consistent input DDR flip flop across multiple FPGA families
     q2   _______X___________X____D1_____X____D3_____X____D5_____X_
 
 */
-
+wire [WIDTH-1:0] d_int;
 genvar n;
 
 generate
+
+if (INSERT_BUFFERS == "TRUE") begin
+    for (genvar i = 0; i < WIDTH; i++) begin
+        IBUF IBUF_inst (
+        .I(d[i]),
+        .O(d_int[i])
+        );
+    end
+end else begin
+    assign d_int = d;
+end
 
 if (TARGET == "XILINX") begin
     for (n = 0; n < WIDTH; n = n + 1) begin : iddr
@@ -81,7 +93,7 @@ if (TARGET == "XILINX") begin
                 .Q2(q2[n]),
                 .C(clk),
                 .CE(1'b1),
-                .D(d[n]),
+                .D(d_int[n]),
                 .R(1'b0),
                 .S(1'b0)
             );
@@ -98,7 +110,7 @@ if (TARGET == "XILINX") begin
                 .C0(clk),
                 .C1(~clk),
                 .CE(1'b1),
-                .D(d[n]),
+                .D(d_int[n]),
                 .R(1'b0),
                 .S(1'b0)
             );
@@ -120,7 +132,7 @@ end else if (TARGET == "ALTERA") begin
     )
     altddio_in_inst (
         .aset(1'b0),
-        .datain(d),
+        .datain(d_int),
         .inclocken(1'b1),
         .inclock(clk),
         .aclr(1'b0),
@@ -141,11 +153,11 @@ end else begin
     reg [WIDTH-1:0] q_reg_2 = {WIDTH{1'b0}};
 
     always @(posedge clk) begin
-        d_reg_1 <= d;
+        d_reg_1 <= d_int;
     end
 
     always @(negedge clk) begin
-        d_reg_2 <= d;
+        d_reg_2 <= d_int;
     end
 
     always @(posedge clk) begin

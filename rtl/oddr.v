@@ -40,7 +40,8 @@ module oddr #
     // Use IODDR2 for Spartan-6
     parameter IODDR_STYLE = "IODDR2",
     // Width of register in bits
-    parameter WIDTH = 1
+    parameter WIDTH = 1,
+    parameter INSERT_BUFFERS = "FALSE"
 )
 (
     input  wire             clk,
@@ -51,6 +52,7 @@ module oddr #
     output wire [WIDTH-1:0] q
 );
 
+wire [WIDTH-1:0] q_int;
 /*
 
 Provides a consistent output DDR flip flop across multiple FPGA families
@@ -77,7 +79,7 @@ if (TARGET == "XILINX") begin
                 .SRTYPE("ASYNC")
             )
             oddr_inst (
-                .Q(q[n]),
+                .Q(q_int[n]),
                 .C(clk),
                 .CE(1'b1),
                 .D1(d1[n]),
@@ -91,7 +93,7 @@ if (TARGET == "XILINX") begin
                 .SRTYPE("ASYNC")
             )
             oddr_inst (
-                .Q(q[n]),
+                .Q(q_int[n]),
                 .C0(clk),
                 .C1(~clk),
                 .CE(1'b1),
@@ -115,7 +117,7 @@ end else if (TARGET == "ALTERA") begin
         .outclocken(1'b1),
         .outclock(clk),
         .aclr(1'b0),
-        .dataout(q)
+        .dataout(q_int)
     );
 end else begin
     reg [WIDTH-1:0] d_reg_1 = {WIDTH{1'b0}};
@@ -136,9 +138,19 @@ end else begin
         q_reg <= d_reg_2;
     end
 
-    assign q = q_reg;
+    assign q_int = q_reg;
 end
 
+if (INSERT_BUFFERS == "TRUE") begin
+    for (genvar i = 0; i < WIDTH; i++) begin
+        OBUF OBUF_inst (
+        .I(q_int[i]),
+        .O(q[i])
+        );
+    end
+end else begin
+    assign q = q_int;
+end
 endgenerate
 
 endmodule

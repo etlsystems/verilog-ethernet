@@ -44,7 +44,8 @@ module rgmii_phy_if #
     // Use BUFG for Virtex-5, Spartan-6, Ultrascale
     parameter CLOCK_INPUT_STYLE = "BUFG",
     // Use 90 degree clock for RGMII transmit ("TRUE", "FALSE")
-    parameter USE_CLK90 = "TRUE"
+    parameter USE_CLK90 = "TRUE",
+    parameter INSERT_BUFFERS = "TRUE"
 )
 (
     // Reset, synchronous to gmii_gtx_clk
@@ -101,7 +102,8 @@ ssio_ddr_in #
     .TARGET(TARGET),
     .CLOCK_INPUT_STYLE(CLOCK_INPUT_STYLE),
     .IODDR_STYLE(IODDR_STYLE),
-    .WIDTH(5)
+    .WIDTH(5),
+    .INSERT_BUFFERS(INSERT_BUFFERS)
 )
 rx_ssio_ddr_inst (
     .input_clk(rgmii_rxc),
@@ -209,7 +211,8 @@ end
 oddr #(
     .TARGET(TARGET),
     .IODDR_STYLE(IODDR_STYLE),
-    .WIDTH(1)
+    .WIDTH(1),
+    .INSERT_BUFFERS(INSERT_BUFFERS)
 )
 clk_oddr_inst (
     .clk(USE_CLK90 == "TRUE" ? gmii_gtx_clk_90 : clk),
@@ -221,7 +224,8 @@ clk_oddr_inst (
 oddr #(
     .TARGET(TARGET),
     .IODDR_STYLE(IODDR_STYLE),
-    .WIDTH(5)
+    .WIDTH(5),
+    .INSERT_BUFFERS(INSERT_BUFFERS)
 )
 data_oddr_inst (
     .clk(clk),
