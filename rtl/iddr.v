@@ -71,7 +71,7 @@ genvar n;
 generate
 
 if (INSERT_BUFFERS == "TRUE") begin
-    for (genvar i = 0; i < WIDTH; i++) begin
+    for (genvar i = 0; i < WIDTH; i=i+1) begin
         IBUF IBUF_inst (
         .I(d[i]),
         .O(d_int[i])
