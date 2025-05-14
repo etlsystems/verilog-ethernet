@@ -44,7 +44,8 @@ module ssio_ddr_in #
     // Use BUFG for Virtex-5, Spartan-6, Ultrascale
     parameter CLOCK_INPUT_STYLE = "BUFG",
     // Width of register in bits
-    parameter WIDTH = 1
+    parameter WIDTH = 1,
+    parameter INSERT_BUFFERS = "FALSE"
 )
 (
     input  wire             input_clk,
@@ -57,10 +58,20 @@ module ssio_ddr_in #
     output wire [WIDTH-1:0] output_q2
 );
 
+wire input_clk_int;
 wire clk_int;
 wire clk_io;
 
 generate
+
+if (INSERT_BUFFERS == "TRUE") begin
+    IBUF IBUF_inst (
+        .I(input_clk),
+        .O(input_clk_int)
+    );
+end else begin
+    assign input_clk_int = input_clk;
+end
 
 if (TARGET == "XILINX") begin
 
@@ -71,7 +82,7 @@ if (TARGET == "XILINX") begin
         // buffer RX clock
         BUFG
         clk_bufg (
-            .I(input_clk),
+            .I(input_clk_int),
             .O(clk_int)
         );
 
@@ -81,7 +92,7 @@ if (TARGET == "XILINX") begin
 
     end else if (CLOCK_INPUT_STYLE == "BUFR") begin
 
-        assign clk_int = input_clk;
+        assign clk_int = input_clk_int;
 
         // pass through RX clock to input buffers
         BUFIO
@@ -103,7 +114,7 @@ if (TARGET == "XILINX") begin
         
     end else if (CLOCK_INPUT_STYLE == "BUFIO") begin
 
-        assign clk_int = input_clk;
+        assign clk_int = input_clk_int;
 
         // pass through RX clock to input buffers
         BUFIO
@@ -124,10 +135,10 @@ if (TARGET == "XILINX") begin
 end else begin
 
     // pass through RX clock to input buffers
-    assign clk_io = input_clk;
+    assign clk_io = input_clk_int;
 
     // pass through RX clock to logic
-    assign clk_int = input_clk;
+    assign clk_int = input_clk_int;
     assign output_clk = clk_int;
 
 end
@@ -137,7 +148,8 @@ endgenerate
 iddr #(
     .TARGET(TARGET),
     .IODDR_STYLE(IODDR_STYLE),
-    .WIDTH(WIDTH)
+    .WIDTH(WIDTH),
+    .INSERT_BUFFERS(INSERT_BUFFERS)
 )
 data_iddr_inst (
     .clk(clk_io),

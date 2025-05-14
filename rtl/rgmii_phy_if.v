@@ -44,43 +44,53 @@ module rgmii_phy_if #
     // Use BUFG for Virtex-5, Spartan-6, Ultrascale
     parameter CLOCK_INPUT_STYLE = "BUFG",
     // Use 90 degree clock for RGMII transmit ("TRUE", "FALSE")
-    parameter USE_CLK90 = "TRUE"
+    parameter USE_CLK90 = "TRUE",
+    parameter INSERT_BUFFERS = "TRUE"
 )
 (
-    input  wire        clk,
-    input  wire        clk90,
+    // Reset, synchronous to gmii_gtx_clk
     input  wire        rst,
 
     /*
      * GMII interface to MAC
      */
-    output wire        mac_gmii_rx_clk,
-    output wire        mac_gmii_rx_rst,
-    output wire [7:0]  mac_gmii_rxd,
-    output wire        mac_gmii_rx_dv,
-    output wire        mac_gmii_rx_er,
-    output wire        mac_gmii_tx_clk,
-    output wire        mac_gmii_tx_rst,
-    output wire        mac_gmii_tx_clk_en,
-    input  wire [7:0]  mac_gmii_txd,
-    input  wire        mac_gmii_tx_en,
-    input  wire        mac_gmii_tx_er,
+    (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME gmii, CAN_DEBUG false" *)
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 gmii RX_CLK" *)  output wire        gmii_rx_clk,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 gmii RXD" *)     output wire [7:0]  gmii_rxd,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 gmii RX_DV" *)   output wire        gmii_rx_dv,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 gmii RX_ER" *)   output wire        gmii_rx_er,
+
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 gmii GTX_CLK" *) input wire         gmii_gtx_clk,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 gmii TXD" *)     input  wire [7:0]  gmii_txd,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 gmii TX_EN" *)   input  wire        gmii_tx_en,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:gmii_rtl:1.0 gmii TX_ER" *)   input  wire        gmii_tx_er,
+    // These are non-standard gmii signals to control the MAC
+    input  wire        gmii_gtx_clk_90,
+    output wire        gmii_rx_rst,
+    output wire        gmii_tx_rst,
+    output wire        gmii_tx_clk_en,
 
     /*
      * RGMII interface to PHY
      */
-    input  wire        phy_rgmii_rx_clk,
-    input  wire [3:0]  phy_rgmii_rxd,
-    input  wire        phy_rgmii_rx_ctl,
-    output wire        phy_rgmii_tx_clk,
-    output wire [3:0]  phy_rgmii_txd,
-    output wire        phy_rgmii_tx_ctl,
+    (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME rgmii, CAN_DEBUG false" *)
+    (* X_INTERFACE_INFO = "xilinx.com:interface:rgmii_rtl:1.0 rgmii RXC" *)    input  wire        rgmii_rxc,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:rgmii_rtl:1.0 rgmii RD" *)     input  wire [3:0]  rgmii_rd,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:rgmii_rtl:1.0 rgmii RX_CTL" *) input  wire        rgmii_rx_ctl,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:rgmii_rtl:1.0 rgmii TXC" *)    output wire        rgmii_txc,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:rgmii_rtl:1.0 rgmii TD" *)     output wire [3:0]  rgmii_td,
+    (* X_INTERFACE_INFO = "xilinx.com:interface:rgmii_rtl:1.0 rgmii TX_CTL" *) output wire        rgmii_tx_ctl,
 
     /*
      * Control
      */
+     // 2'b10: 1G
+     // 2'b01: 100M
+     // 2'b00: 10M
     input  wire [1:0]  speed
 );
+
+wire clk;
 
 // receive
 
@@ -92,18 +102,19 @@ ssio_ddr_in #
     .TARGET(TARGET),
     .CLOCK_INPUT_STYLE(CLOCK_INPUT_STYLE),
     .IODDR_STYLE(IODDR_STYLE),
-    .WIDTH(5)
+    .WIDTH(5),
+    .INSERT_BUFFERS(INSERT_BUFFERS)
 )
 rx_ssio_ddr_inst (
-    .input_clk(phy_rgmii_rx_clk),
-    .input_d({phy_rgmii_rxd, phy_rgmii_rx_ctl}),
-    .output_clk(mac_gmii_rx_clk),
-    .output_q1({mac_gmii_rxd[3:0], rgmii_rx_ctl_1}),
-    .output_q2({mac_gmii_rxd[7:4], rgmii_rx_ctl_2})
+    .input_clk(rgmii_rxc),
+    .input_d({rgmii_rd, rgmii_rx_ctl}),
+    .output_clk(gmii_rx_clk),
+    .output_q1({gmii_rxd[3:0], rgmii_rx_ctl_1}),
+    .output_q2({gmii_rxd[7:4], rgmii_rx_ctl_2})
 );
 
-assign mac_gmii_rx_dv = rgmii_rx_ctl_1;
-assign mac_gmii_rx_er = rgmii_rx_ctl_1 ^ rgmii_rx_ctl_2;
+assign gmii_rx_dv = rgmii_rx_ctl_1;
+assign gmii_rx_er = rgmii_rx_ctl_1 ^ rgmii_rx_ctl_2;
 
 // transmit
 
@@ -111,7 +122,7 @@ reg rgmii_tx_clk_1 = 1'b1;
 reg rgmii_tx_clk_2 = 1'b0;
 reg rgmii_tx_clk_en = 1'b1;
 
-reg [5:0] count_reg = 6'd0, count_next;
+reg [5:0] count_reg = 6'd0;
 
 always @(posedge clk) begin
     rgmii_tx_clk_1 <= rgmii_tx_clk_2;
@@ -165,75 +176,73 @@ reg gmii_clk_en = 1'b1;
 always @* begin
     if (speed == 2'b00) begin
         // 10M
-        rgmii_txd_1 = mac_gmii_txd[3:0];
-        rgmii_txd_2 = mac_gmii_txd[3:0];
+        rgmii_txd_1 = gmii_txd[3:0];
+        rgmii_txd_2 = gmii_txd[3:0];
         if (rgmii_tx_clk_1) begin
-            rgmii_tx_ctl_1 = mac_gmii_tx_en ^ mac_gmii_tx_er;
-            rgmii_tx_ctl_2 = mac_gmii_tx_en ^ mac_gmii_tx_er;
+            rgmii_tx_ctl_1 = gmii_tx_en ^ gmii_tx_er;
+            rgmii_tx_ctl_2 = gmii_tx_en ^ gmii_tx_er;
         end else begin
-            rgmii_tx_ctl_1 = mac_gmii_tx_en;
-            rgmii_tx_ctl_2 = mac_gmii_tx_en;
+            rgmii_tx_ctl_1 = gmii_tx_en;
+            rgmii_tx_ctl_2 = gmii_tx_en;
         end
         gmii_clk_en = rgmii_tx_clk_en;
     end else if (speed == 2'b01) begin
         // 100M
-        rgmii_txd_1 = mac_gmii_txd[3:0];
-        rgmii_txd_2 = mac_gmii_txd[3:0];
+        rgmii_txd_1 = gmii_txd[3:0];
+        rgmii_txd_2 = gmii_txd[3:0];
         if (rgmii_tx_clk_1) begin
-            rgmii_tx_ctl_1 = mac_gmii_tx_en ^ mac_gmii_tx_er;
-            rgmii_tx_ctl_2 = mac_gmii_tx_en ^ mac_gmii_tx_er;
+            rgmii_tx_ctl_1 = gmii_tx_en ^ gmii_tx_er;
+            rgmii_tx_ctl_2 = gmii_tx_en ^ gmii_tx_er;
         end else begin
-            rgmii_tx_ctl_1 = mac_gmii_tx_en;
-            rgmii_tx_ctl_2 = mac_gmii_tx_en;
+            rgmii_tx_ctl_1 = gmii_tx_en;
+            rgmii_tx_ctl_2 = gmii_tx_en;
         end
         gmii_clk_en = rgmii_tx_clk_en;
     end else begin
         // 1000M
-        rgmii_txd_1 = mac_gmii_txd[3:0];
-        rgmii_txd_2 = mac_gmii_txd[7:4];
-        rgmii_tx_ctl_1 = mac_gmii_tx_en;
-        rgmii_tx_ctl_2 = mac_gmii_tx_en ^ mac_gmii_tx_er;
+        rgmii_txd_1 = gmii_txd[3:0];
+        rgmii_txd_2 = gmii_txd[7:4];
+        rgmii_tx_ctl_1 = gmii_tx_en;
+        rgmii_tx_ctl_2 = gmii_tx_en ^ gmii_tx_er;
         gmii_clk_en = 1;
     end
 end
 
-wire phy_rgmii_tx_clk_new;
-wire [3:0] phy_rgmii_txd_new;
-wire phy_rgmii_tx_ctl_new;
-
 oddr #(
     .TARGET(TARGET),
     .IODDR_STYLE(IODDR_STYLE),
-    .WIDTH(1)
+    .WIDTH(1),
+    .INSERT_BUFFERS(INSERT_BUFFERS)
 )
 clk_oddr_inst (
-    .clk(USE_CLK90 == "TRUE" ? clk90 : clk),
+    .clk(USE_CLK90 == "TRUE" ? gmii_gtx_clk_90 : clk),
     .d1(rgmii_tx_clk_1),
     .d2(rgmii_tx_clk_2),
-    .q(phy_rgmii_tx_clk)
+    .q(rgmii_txc)
 );
 
 oddr #(
     .TARGET(TARGET),
     .IODDR_STYLE(IODDR_STYLE),
-    .WIDTH(5)
+    .WIDTH(5),
+    .INSERT_BUFFERS(INSERT_BUFFERS)
 )
 data_oddr_inst (
     .clk(clk),
     .d1({rgmii_txd_1, rgmii_tx_ctl_1}),
     .d2({rgmii_txd_2, rgmii_tx_ctl_2}),
-    .q({phy_rgmii_txd, phy_rgmii_tx_ctl})
+    .q({rgmii_td, rgmii_tx_ctl})
 );
 
-assign mac_gmii_tx_clk = clk;
+assign clk = gmii_gtx_clk;
 
-assign mac_gmii_tx_clk_en = gmii_clk_en;
+assign gmii_tx_clk_en = gmii_clk_en;
 
 // reset sync
 reg [3:0] tx_rst_reg = 4'hf;
-assign mac_gmii_tx_rst = tx_rst_reg[0];
+assign gmii_tx_rst = tx_rst_reg[0];
 
-always @(posedge mac_gmii_tx_clk or posedge rst) begin
+always @(posedge clk or posedge rst) begin
     if (rst) begin
         tx_rst_reg <= 4'hf;
     end else begin
@@ -242,9 +251,9 @@ always @(posedge mac_gmii_tx_clk or posedge rst) begin
 end
 
 reg [3:0] rx_rst_reg = 4'hf;
-assign mac_gmii_rx_rst = rx_rst_reg[0];
+assign gmii_rx_rst = rx_rst_reg[0];
 
-always @(posedge mac_gmii_rx_clk or posedge rst) begin
+always @(posedge gmii_rx_clk or posedge rst) begin
     if (rst) begin
         rx_rst_reg <= 4'hf;
     end else begin

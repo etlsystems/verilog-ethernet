@@ -100,13 +100,13 @@ module eth_mac_1g_rgmii #
     input  wire        cfg_rx_enable
 );
 
-wire [7:0]  mac_gmii_rxd;
-wire        mac_gmii_rx_dv;
-wire        mac_gmii_rx_er;
-wire        mac_gmii_tx_clk_en;
-wire [7:0]  mac_gmii_txd;
-wire        mac_gmii_tx_en;
-wire        mac_gmii_tx_er;
+wire [7:0]  gmii_rxd;
+wire        gmii_rx_dv;
+wire        gmii_rx_er;
+wire        gmii_tx_clk_en;
+wire [7:0]  gmii_txd;
+wire        gmii_tx_en;
+wire        gmii_tx_er;
 
 reg [1:0] speed_reg = 2'b10;
 reg mii_select_reg = 1'b0;
@@ -189,28 +189,27 @@ rgmii_phy_if #(
     .USE_CLK90(USE_CLK90)
 )
 rgmii_phy_if_inst (
-    .clk(gtx_clk),
-    .clk90(gtx_clk90),
+    .gmii_gtx_clk(gtx_clk),
+    .gmii_gtx_clk_90(gtx_clk90),
     .rst(gtx_rst),
 
-    .mac_gmii_rx_clk(rx_clk),
-    .mac_gmii_rx_rst(rx_rst),
-    .mac_gmii_rxd(mac_gmii_rxd),
-    .mac_gmii_rx_dv(mac_gmii_rx_dv),
-    .mac_gmii_rx_er(mac_gmii_rx_er),
-    .mac_gmii_tx_clk(tx_clk),
-    .mac_gmii_tx_rst(tx_rst),
-    .mac_gmii_tx_clk_en(mac_gmii_tx_clk_en),
-    .mac_gmii_txd(mac_gmii_txd),
-    .mac_gmii_tx_en(mac_gmii_tx_en),
-    .mac_gmii_tx_er(mac_gmii_tx_er),
+    .gmii_rx_clk(rx_clk),
+    .gmii_rx_rst(rx_rst),
+    .gmii_rxd(gmii_rxd),
+    .gmii_rx_dv(gmii_rx_dv),
+    .gmii_rx_er(gmii_rx_er),
+    .gmii_tx_rst(tx_rst),
+    .gmii_tx_clk_en(gmii_tx_clk_en),
+    .gmii_txd(gmii_txd),
+    .gmii_tx_en(gmii_tx_en),
+    .gmii_tx_er(gmii_tx_er),
 
-    .phy_rgmii_rx_clk(rgmii_rx_clk),
-    .phy_rgmii_rxd(rgmii_rxd),
-    .phy_rgmii_rx_ctl(rgmii_rx_ctl),
-    .phy_rgmii_tx_clk(rgmii_tx_clk),
-    .phy_rgmii_txd(rgmii_txd),
-    .phy_rgmii_tx_ctl(rgmii_tx_ctl),
+    .rgmii_rxc(rgmii_rx_clk),
+    .rgmii_rd(rgmii_rxd),
+    .rgmii_rx_ctl(rgmii_rx_ctl),
+    .rgmii_txc(rgmii_tx_clk),
+    .rgmii_td(rgmii_txd),
+    .rgmii_tx_ctl(rgmii_tx_ctl),
 
     .speed(speed)
 );
@@ -220,10 +219,10 @@ eth_mac_1g #(
     .MIN_FRAME_LENGTH(MIN_FRAME_LENGTH)
 )
 eth_mac_1g_inst (
-    .tx_clk(tx_clk),
-    .tx_rst(tx_rst),
-    .rx_clk(rx_clk),
-    .rx_rst(rx_rst),
+    .tx_clk(gtx_clk),
+    .gmii_tx_rst(tx_rst),
+    .gmii_rx_clk(rx_clk),
+    .gmii_rx_rst(rx_rst),
     .tx_axis_tdata(tx_axis_tdata),
     .tx_axis_tvalid(tx_axis_tvalid),
     .tx_axis_tready(tx_axis_tready),
@@ -233,14 +232,15 @@ eth_mac_1g_inst (
     .rx_axis_tvalid(rx_axis_tvalid),
     .rx_axis_tlast(rx_axis_tlast),
     .rx_axis_tuser(rx_axis_tuser),
-    .gmii_rxd(mac_gmii_rxd),
-    .gmii_rx_dv(mac_gmii_rx_dv),
-    .gmii_rx_er(mac_gmii_rx_er),
-    .gmii_txd(mac_gmii_txd),
-    .gmii_tx_en(mac_gmii_tx_en),
-    .gmii_tx_er(mac_gmii_tx_er),
+    .gmii_rxd(gmii_rxd),
+    .gmii_rx_dv(gmii_rx_dv),
+    .gmii_rx_er(gmii_rx_er),
+    .gmii_gtx_clk(tx_clk),
+    .gmii_txd(gmii_txd),
+    .gmii_tx_en(gmii_tx_en),
+    .gmii_tx_er(gmii_tx_er),
     .rx_clk_enable(1'b1),
-    .tx_clk_enable(mac_gmii_tx_clk_en),
+    .tx_clk_enable(gmii_tx_clk_en),
     .rx_mii_select(rx_mii_select_sync[1]),
     .tx_mii_select(tx_mii_select_sync[1]),
     .tx_error_underflow(tx_error_underflow),
