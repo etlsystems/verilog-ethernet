@@ -93,7 +93,7 @@ module rgmii_phy_if #
     output rgmii_rxc_debug,
     output [3:0] rgmii_rd_debug,
     output rgmii_rx_ctl_debug,
-    output rgmii_txc_debug
+    output rgmii_txc_debug,
     output [3:0] rgmii_td_debug,
     output rgmii_tx_ctl_debug,
 
