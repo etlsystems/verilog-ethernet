@@ -90,12 +90,12 @@ module rgmii_phy_if #
     input  wire [1:0]  speed,
 
     // Debug _signal
-    output rgmii_rxc_debug,
-    output [3:0] rgmii_rd_debug,
-    output rgmii_rx_ctl_debug,
-    output rgmii_txc_debug,
-    output [3:0] rgmii_td_debug,
-    output rgmii_tx_ctl_debug,
+    output wire rgmii_rxc_debug,
+    output wire [3:0] rgmii_rd_debug,
+    output wire rgmii_rx_ctl_debug,
+    output wire rgmii_txc_debug,
+    output wire [3:0] rgmii_td_debug,
+    output wire rgmii_tx_ctl_debug,
 
     output wire        gmii_rx_clk_debug,
     output wire [7:0]  gmii_rxd_debug,
