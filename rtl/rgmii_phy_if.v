@@ -88,28 +88,28 @@ module rgmii_phy_if #
      // 2'b01: 100M
      // 2'b00: 10M
     input  wire [1:0]  speed,
+    output wire [47:0] debug_rgmii
 
-    // Debug _signal
-    output wire rgmii_rxc_debug,
-    output wire [3:0] rgmii_rd_debug,
-    output wire rgmii_rx_ctl_debug,
-    output wire rgmii_txc_debug,
-    output wire [3:0] rgmii_td_debug,
-    output wire rgmii_tx_ctl_debug,
-
-    output wire        gmii_rx_clk_debug,
-    output wire [7:0]  gmii_rxd_debug,
-    output wire        gmii_rx_dv_debug,
-    output wire        gmii_rx_er_debug,
-
-    output wire         gmii_gtx_clk_debug,
-    output  wire [7:0]  gmii_txd_debug,
-    output  wire        gmii_tx_en_debug,
-    output  wire        gmii_tx_er_debug
 
 
 );
+    // Debug _signal
+    wire rgmii_rxc_debug;
+    wire [3:0] rgmii_rd_debug;
+    wire rgmii_rx_ctl_debug;
+    wire rgmii_txc_debug;
+    wire [3:0] rgmii_td_debug;
+    wire rgmii_tx_ctl_debug;
 
+    wire        gmii_rx_clk_debug;
+    wire [7:0]  gmii_rxd_debug;
+    wire        gmii_rx_dv_debug;
+    wire        gmii_rx_er_debug;
+
+    wire         gmii_gtx_clk_debug;
+     wire [7:0]  gmii_txd_debug;
+     wire        gmii_tx_en_debug;
+     wire        gmii_tx_er_debug;
     assign rgmii_rxc_debug = rgmii_rxc;
     assign rgmii_rd_debug = rgmii_rd;
     assign rgmii_rx_ctl_debug = rgmii_rx_ctl;
@@ -126,6 +126,7 @@ module rgmii_phy_if #
     assign gmii_txd_debug= gmii_txd;
     assign gmii_tx_en_debug= gmii_tx_en;
     assign gmii_tx_er_debug= gmii_tx_er;
+    assign debug = {rgmii_rxc_debug,rgmii_rd_debug,rgmii_rx_ctl_debug,rgmii_txc_debug,rgmii_td_debug,rgmii_tx_ctl_debug,gmii_rx_clk_debug,gmii_rxd_debug,gmii_rx_dv_debug,gmii_rx_er_debug,gmii_gtx_clk_debug,gmii_txd_debug,gmii_tx_en_debug,gmii_tx_er_debug};
 wire clk;
 
 // receive
