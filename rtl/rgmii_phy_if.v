@@ -114,8 +114,8 @@ module rgmii_phy_if #
      wire        gmii_tx_en_debug;
      wire        gmii_tx_er_debug;
     assign rgmii_rxc_debug = 0;
-    assign rgmii_rd_debug = rgmii_rd;
-    assign rgmii_rx_ctl_debug = rgmii_rx_ctl;
+    assign rgmii_rd_debug = 0;
+    assign rgmii_rx_ctl_debug = 0;
     assign rgmii_txc_debug = 0;
     assign rgmii_td_debug   = 0;
     assign rgmii_tx_ctl_debug = 0;
