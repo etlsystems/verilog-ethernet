@@ -88,9 +88,7 @@ module rgmii_phy_if #
      // 2'b01: 100M
      // 2'b00: 10M
     input  wire [1:0]  speed,
-    output wire [47:0] debug_rgmii,
-    output wire rx_rgmii_clk,
-    output wire rx_gmii_clk
+    output wire [47:0] debug_rgmii
 
 
 
