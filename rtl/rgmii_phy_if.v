@@ -113,12 +113,12 @@ module rgmii_phy_if #
      wire [7:0]  gmii_txd_debug;
      wire        gmii_tx_en_debug;
      wire        gmii_tx_er_debug;
-    assign rgmii_rxc_debug = rgmii_rxc;
+    assign rgmii_rxc_debug = '0;
     assign rgmii_rd_debug = rgmii_rd;
     assign rgmii_rx_ctl_debug = rgmii_rx_ctl;
-    assign rgmii_txc_debug = rgmii_txc;
-    assign rgmii_td_debug   = rgmii_td;
-    assign rgmii_tx_ctl_debug = rgmii_tx_ctl;
+    assign rgmii_txc_debug = '0;
+    assign rgmii_td_debug   = '0;
+    assign rgmii_tx_ctl_debug = '0;
 
     assign gmii_rx_clk_debug = gmii_rx_clk;
     assign gmii_rxd_debug = gmii_rxd;
