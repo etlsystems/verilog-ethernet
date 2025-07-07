@@ -128,8 +128,7 @@ module rgmii_phy_if #
     assign gmii_tx_en_debug= gmii_tx_en;
     assign gmii_tx_er_debug= gmii_tx_er;
     assign debug_rgmii = {rgmii_rxc_debug,rgmii_rd_debug,rgmii_rx_ctl_debug,rgmii_txc_debug,rgmii_td_debug,rgmii_tx_ctl_debug,gmii_rx_clk_debug,gmii_rxd_debug,gmii_rx_dv_debug,gmii_rx_er_debug,gmii_gtx_clk_debug,gmii_txd_debug,gmii_tx_en_debug,gmii_tx_er_debug};
-    assign rx_gmii_clk = gmii_rx_clk_debug;
-    assign rx_rgmii_clk = rgmii_rxc_debug;
+
 wire clk;
 
 // receive
