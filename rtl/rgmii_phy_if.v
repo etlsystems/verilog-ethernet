@@ -88,7 +88,9 @@ module rgmii_phy_if #
      // 2'b01: 100M
      // 2'b00: 10M
     input  wire [1:0]  speed,
-    output wire [47:0] debug_rgmii
+    output wire [47:0] debug_rgmii,
+    output wire rx_rgmii_clk,
+    output wire rx_gmii_clk
 
 
 
@@ -128,7 +130,8 @@ module rgmii_phy_if #
     assign gmii_tx_en_debug= gmii_tx_en;
     assign gmii_tx_er_debug= gmii_tx_er;
     assign debug_rgmii = {rgmii_rxc_debug,rgmii_rd_debug,rgmii_rx_ctl_debug,rgmii_txc_debug,rgmii_td_debug,rgmii_tx_ctl_debug,gmii_rx_clk_debug,gmii_rxd_debug,gmii_rx_dv_debug,gmii_rx_er_debug,gmii_gtx_clk_debug,gmii_txd_debug,gmii_tx_en_debug,gmii_tx_er_debug};
-
+    assign rx_gmii_clk = gmii_rx_clk_debug;
+    assign rx_rgmii_clk = rgmii_rxc_debug;
 wire clk;
 
 // receive
