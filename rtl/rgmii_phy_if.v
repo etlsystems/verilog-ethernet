@@ -98,7 +98,7 @@ module rgmii_phy_if #
     input  wire             inc,
     input  wire             load,
     input  wire [8:0]      cnt_value_in,
-    output wire [(WIDTH*9)-1:0]      cnt_value_out
+    output wire [(5*9)-1:0]      cnt_value_out
 
 
 
