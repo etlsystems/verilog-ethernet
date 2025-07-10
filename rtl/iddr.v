@@ -57,7 +57,7 @@ module iddr #
     input  wire [WIDTH-1:0] d,
 
     output wire [WIDTH-1:0] q1,
-    output wire [WIDTH-1:0] q2,
+    output wire [WIDTH-1:0] q2
 );
 
 /*
