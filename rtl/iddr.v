@@ -122,8 +122,8 @@ if (TARGET == "XILINX") begin
       .RST(rst)                  // 1-bit input: Asynchronous Reset to the DELAY_VALUE
    );
 
-
-        if (IODDR_STYLE == "IODDR") begin
+    end
+       /* if (IODDR_STYLE == "IODDR") begin
             IDDR #(
                 .DDR_CLK_EDGE("SAME_EDGE_PIPELINED"),
                 .SRTYPE("ASYNC")
@@ -161,7 +161,28 @@ if (TARGET == "XILINX") begin
 
             assign q1[n] = q1_delay;
         end
+    end*/
+    reg [WIDTH-1:0] d_reg_1 = {WIDTH{1'b0}};
+    reg [WIDTH-1:0] d_reg_2 = {WIDTH{1'b0}};
+
+    reg [WIDTH-1:0] q_reg_1 = {WIDTH{1'b0}};
+    reg [WIDTH-1:0] q_reg_2 = {WIDTH{1'b0}};
+
+    always @(posedge clk) begin
+        d_reg_1 <= delayed_data_int;
     end
+
+    always @(negedge clk) begin
+        d_reg_2 <= delayed_data_int;
+    end
+
+    always @(posedge clk) begin
+        q_reg_1 <= d_reg_1;
+        q_reg_2 <= d_reg_2;
+    end
+
+    assign q1 = q_reg_1;
+    assign q2 = q_reg_2;
 end else if (TARGET == "ALTERA") begin
     wire [WIDTH-1:0] q1_int;
     reg [WIDTH-1:0] q1_delay;
