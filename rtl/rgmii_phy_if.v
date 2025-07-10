@@ -34,18 +34,18 @@ THE SOFTWARE.
 module rgmii_phy_if #
 (
     // target ("SIM", "GENERIC", "XILINX", "ALTERA")
-    parameter TARGET = "GENERIC",
+    parameter TARGET = "XILINX",
     // IODDR style ("IODDR", "IODDR2")
     // Use IODDR for Virtex-4, Virtex-5, Virtex-6, 7 Series, Ultrascale
     // Use IODDR2 for Spartan-6
-    parameter IODDR_STYLE = "IODDR2",
+    parameter IODDR_STYLE = "IODDR",
     // Clock input style ("BUFG", "BUFR", "BUFIO", "BUFIO2")
     // Use BUFR for Virtex-6, 7-series
     // Use BUFG for Virtex-5, Spartan-6, Ultrascale
-    parameter CLOCK_INPUT_STYLE = "BUFG",
+    parameter CLOCK_INPUT_STYLE = "BUFIO",
     // Use 90 degree clock for RGMII transmit ("TRUE", "FALSE")
     parameter USE_CLK90 = "TRUE",
-    parameter INSERT_BUFFERS = "TRUE"
+    parameter INSERT_BUFFERS = "FALSE"
 )
 (
     // Reset, synchronous to gmii_gtx_clk
@@ -87,9 +87,64 @@ module rgmii_phy_if #
      // 2'b10: 1G
      // 2'b01: 100M
      // 2'b00: 10M
-    input  wire [1:0]  speed
-);
+    input  wire [1:0]  speed,
+    output wire [47:0] debug_rgmii,
+    output wire rx_rgmii_clk,
+    output wire rx_gmii_clk
 
+
+
+
+);
+    // Debug _signal
+    wire rgmii_rxc_debug;
+    wire [3:0] rgmii_rd_debug;
+    wire rgmii_rx_ctl_debug;
+    wire rgmii_txc_debug;
+    wire [3:0] rgmii_td_debug;
+    wire rgmii_tx_ctl_debug;
+
+    wire        gmii_rx_clk_debug;
+    wire [7:0]  gmii_rxd_debug;
+    wire        gmii_rx_dv_debug;
+    wire        gmii_rx_er_debug;
+
+    wire         gmii_gtx_clk_debug;
+     wire [7:0]  gmii_txd_debug;
+     wire        gmii_tx_en_debug;
+     wire        gmii_tx_er_debug;
+    assign rgmii_rxc_debug = 0;
+    assign rgmii_rd_debug = 0;
+    assign rgmii_rx_ctl_debug = 0;
+    assign rgmii_txc_debug = 0;
+    assign rgmii_td_debug   = 0;
+    assign rgmii_tx_ctl_debug = 0;
+
+    assign gmii_rx_clk_debug = gmii_rx_clk;
+    assign gmii_rxd_debug = gmii_rxd;
+    assign gmii_rx_dv_debug= gmii_rx_dv;
+    assign gmii_rx_er_debug= gmii_rx_er;
+
+    assign gmii_gtx_clk_debug= gmii_gtx_clk;
+    assign gmii_txd_debug= gmii_txd;
+    assign gmii_tx_en_debug= gmii_tx_en;
+    assign gmii_tx_er_debug= gmii_tx_er;
+    assign debug_rgmii = {rgmii_rxc_debug,
+    rgmii_rd_debug,
+    rgmii_rx_ctl_debug,
+    rgmii_txc_debug,
+    rgmii_td_debug,
+    rgmii_tx_ctl_debug,
+    gmii_rx_clk_debug,
+    gmii_rxd_debug,
+    gmii_rx_dv_debug,
+    gmii_rx_er_debug,
+    gmii_gtx_clk_debug,
+    gmii_txd_debug,
+    gmii_tx_en_debug,
+    gmii_tx_er_debug};
+    assign rx_gmii_clk = gmii_rx_clk_debug;
+    assign rx_rgmii_clk = rgmii_rxc_debug;
 wire clk;
 
 // receive
@@ -209,10 +264,7 @@ always @* begin
 end
 
 oddr #(
-    .TARGET(TARGET),
-    .IODDR_STYLE(IODDR_STYLE),
-    .WIDTH(1),
-    .INSERT_BUFFERS(INSERT_BUFFERS)
+    .WIDTH(1)
 )
 clk_oddr_inst (
     .clk(USE_CLK90 == "TRUE" ? gmii_gtx_clk_90 : clk),
@@ -222,10 +274,7 @@ clk_oddr_inst (
 );
 
 oddr #(
-    .TARGET(TARGET),
-    .IODDR_STYLE(IODDR_STYLE),
-    .WIDTH(5),
-    .INSERT_BUFFERS(INSERT_BUFFERS)
+    .WIDTH(5)
 )
 data_oddr_inst (
     .clk(clk),
