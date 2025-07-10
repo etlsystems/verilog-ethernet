@@ -92,7 +92,7 @@ module rgmii_phy_if #
     output wire rx_rgmii_clk,
     output wire rx_gmii_clk,
 
-    input  wire             rst,
+    input  wire             rst_idelay,
     input  wire             en, 
     input  wire             en_vtc,
     input  wire             inc,
@@ -174,7 +174,7 @@ rx_ssio_ddr_inst (
     .output_clk(gmii_rx_clk),
     .output_q1({gmii_rxd[3:0], rgmii_rx_ctl_1}),
     .output_q2({gmii_rxd[7:4], rgmii_rx_ctl_2}),
-    .rst(rst),
+    .rst(rst_idelay),
     .en(en), 
     .en_vtc(en_vtc),
     .inc(inc),
