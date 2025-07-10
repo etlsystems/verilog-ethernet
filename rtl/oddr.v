@@ -71,9 +71,9 @@ genvar n;
 
 generate
 
-if (TARGET == "XILINX") begin
-    for (n = 0; n < WIDTH; n = n + 1) begin : oddr
-        if (IODDR_STYLE == "IODDR") begin
+//if (TARGET == "XILINX") begin
+///    for (n = 0; n < WIDTH; n = n + 1) begin : oddr
+ //       if (IODDR_STYLE == "IODDR") begin
             ODDR #(
                 .DDR_CLK_EDGE("SAME_EDGE"),
                 .SRTYPE("ASYNC")
@@ -87,12 +87,12 @@ if (TARGET == "XILINX") begin
                 .R(1'b0),
                 .S(1'b0)
             );
-        end else if (IODDR_STYLE == "IODDR2") begin
-            ODDR2 #(
-                .DDR_ALIGNMENT("C0"),
-                .SRTYPE("ASYNC")
-            )
-            oddr_inst (
+ //       end else if (IODDR_STYLE == "IODDR2") begin
+ //           ODDR2 #(
+ //               .DDR_ALIGNMENT("C0"),
+ //               .SRTYPE("ASYNC")
+  //          )
+ /*           oddr_inst (
                 .Q(q_int[n]),
                 .C0(clk),
                 .C1(~clk),
@@ -140,7 +140,7 @@ end else begin
 
     assign q_int = q_reg;
 end
-
+*/
 if (INSERT_BUFFERS == "TRUE") begin
     for (genvar i = 0; i < WIDTH; i=i+1) begin
         OBUF OBUF_inst (
