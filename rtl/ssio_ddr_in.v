@@ -55,7 +55,15 @@ module ssio_ddr_in #
     output wire             output_clk,
 
     output wire [WIDTH-1:0] output_q1,
-    output wire [WIDTH-1:0] output_q2
+    output wire [WIDTH-1:0] output_q2,
+
+    input  wire             rst,
+    input  wire             en, 
+    input  wire             en_vtc,
+    input  wire             inc,
+    input  wire             load,
+    input  wire [8:0]      cnt_value_in,
+    output wire [(WIDTH*9)-1:0]      cnt_value_out
 );
 
 wire input_clk_int;
@@ -145,6 +153,8 @@ end
 
 endgenerate
 
+
+
 iddr #(
     .TARGET(TARGET),
     .IODDR_STYLE(IODDR_STYLE),
@@ -155,7 +165,14 @@ data_iddr_inst (
     .clk(clk_io),
     .d(input_d),
     .q1(output_q1),
-    .q2(output_q2)
+    .q2(output_q2),
+    .rst(rst),
+    .en(en), 
+    .en_vtc(en_vtc),
+    .inc(inc),
+    .load(load),
+    .cnt_value_in(cnt_value_in),
+    .cnt_value_out(cnt_value_out)
 );
 
 endmodule

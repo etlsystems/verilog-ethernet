@@ -45,11 +45,19 @@ module iddr #
 )
 (
     input  wire             clk,
+    input  wire             rst,
+    input  wire             en, 
+    input  wire             en_vtc,
+    input  wire             inc,
+    input  wire             load,
+    input  wire [8:0]      cnt_value_in,
+    output wire [(WIDTH*9)-1:0]      cnt_value_out,
+    // Data input   
 
     input  wire [WIDTH-1:0] d,
 
     output wire [WIDTH-1:0] q1,
-    output wire [WIDTH-1:0] q2
+    output wire [WIDTH-1:0] q2,
 );
 
 /*
@@ -66,6 +74,7 @@ Provides a consistent input DDR flip flop across multiple FPGA families
 
 */
 wire [WIDTH-1:0] d_int;
+wire [WIDTH-1:0] delayed_data_int;
 genvar n;
 
 generate
@@ -83,6 +92,37 @@ end
 
 if (TARGET == "XILINX") begin
     for (n = 0; n < WIDTH; n = n + 1) begin : iddr
+      
+   IDELAYE3 #(
+      .CASCADE("NONE"),          // Cascade setting (MASTER, NONE, SLAVE_END, SLAVE_MIDDLE)
+      .DELAY_FORMAT("COUNT"),     // Units of the DELAY_VALUE (COUNT, TIME)
+      .DELAY_SRC("IDATAIN"),     // Delay input (DATAIN, IDATAIN)
+      .DELAY_TYPE("VARIABLE"),      // Set the type of tap delay line (FIXED, VARIABLE, VAR_LOAD)
+      .DELAY_VALUE(0),           // Input delay value setting
+      .IS_CLK_INVERTED(1'b0),    // Optional inversion for CLK
+      .IS_RST_INVERTED(1'b0),    // Optional inversion for RST
+      .REFCLK_FREQUENCY(125.0),  // IDELAYCTRL clock input frequency in MHz (200.0-800.0)
+      .SIM_DEVICE("ULTRASCALE_PLUS"), // Set the device version for simulation functionality (ULTRASCALE)
+      .UPDATE_MODE("ASYNC")      // Determines when updates to the delay will take effect (ASYNC, MANUAL, SYNC)
+   )
+   IDELAYE3_inst (
+      .CASC_OUT(),       // 1-bit output: Cascade delay output to ODELAY input cascade
+      .CNTVALUEOUT(cnt_value_out[(n*9)+8 : n*9 ]), // 9-bit output: Counter value output
+      .DATAOUT(delayed_data_int[n]),         // 1-bit output: Delayed data output
+      .CASC_IN(0),         // 1-bit input: Cascade delay input from slave ODELAY CASCADE_OUT
+      .CASC_RETURN(0), // 1-bit input: Cascade delay returning from slave ODELAY DATAOUT
+      .CE(en),                   // 1-bit input: Active-High enable increment/decrement input
+      .CLK(clk),                 // 1-bit input: Clock input
+      .CNTVALUEIN(cnt_value_in),   // 9-bit input: Counter value input
+      .DATAIN('0),           // 1-bit input: Data input from the logic
+      .EN_VTC(en_vtc),           // 1-bit input: Keep delay constant over VT
+      .IDATAIN(d_int[n]),         // 1-bit input: Data input from the IOBUF
+      .INC(inc),                 // 1-bit input: Increment / Decrement tap delay input
+      .LOAD(load),               // 1-bit input: Load DELAY_VALUE input
+      .RST(rst)                  // 1-bit input: Asynchronous Reset to the DELAY_VALUE
+   );
+
+
         if (IODDR_STYLE == "IODDR") begin
             IDDR #(
                 .DDR_CLK_EDGE("SAME_EDGE_PIPELINED"),
@@ -93,7 +133,7 @@ if (TARGET == "XILINX") begin
                 .Q2(q2[n]),
                 .C(clk),
                 .CE(1'b1),
-                .D(d_int[n]),
+                .D(),
                 .R(1'b0),
                 .S(1'b0)
             );
@@ -110,7 +150,7 @@ if (TARGET == "XILINX") begin
                 .C0(clk),
                 .C1(~clk),
                 .CE(1'b1),
-                .D(d_int[n]),
+                .D(delayed_data_int[n]),
                 .R(1'b0),
                 .S(1'b0)
             );

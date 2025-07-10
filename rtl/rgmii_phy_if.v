@@ -45,7 +45,7 @@ module rgmii_phy_if #
     parameter CLOCK_INPUT_STYLE = "BUFIO",
     // Use 90 degree clock for RGMII transmit ("TRUE", "FALSE")
     parameter USE_CLK90 = "TRUE",
-    parameter INSERT_BUFFERS = "FALSE"
+    parameter INSERT_BUFFERS = "TRUE"
 )
 (
     // Reset, synchronous to gmii_gtx_clk
@@ -90,7 +90,15 @@ module rgmii_phy_if #
     input  wire [1:0]  speed,
     output wire [47:0] debug_rgmii,
     output wire rx_rgmii_clk,
-    output wire rx_gmii_clk
+    output wire rx_gmii_clk,
+
+    input  wire             rst,
+    input  wire             en, 
+    input  wire             en_vtc,
+    input  wire             inc,
+    input  wire             load,
+    input  wire [8:0]      cnt_value_in,
+    output wire [(WIDTH*9)-1:0]      cnt_value_out
 
 
 
@@ -165,7 +173,14 @@ rx_ssio_ddr_inst (
     .input_d({rgmii_rd, rgmii_rx_ctl}),
     .output_clk(gmii_rx_clk),
     .output_q1({gmii_rxd[3:0], rgmii_rx_ctl_1}),
-    .output_q2({gmii_rxd[7:4], rgmii_rx_ctl_2})
+    .output_q2({gmii_rxd[7:4], rgmii_rx_ctl_2}),
+    .rst(rst),
+    .en(en), 
+    .en_vtc(en_vtc),
+    .inc(inc),
+    .load(load),
+    .cnt_value_in(cnt_value_in),
+    .cnt_value_out(cnt_value_out)
 );
 
 assign gmii_rx_dv = rgmii_rx_ctl_1;
