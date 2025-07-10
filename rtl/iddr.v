@@ -114,7 +114,7 @@ if (TARGET == "XILINX") begin
       .CE(en),                   // 1-bit input: Active-High enable increment/decrement input
       .CLK(clk),                 // 1-bit input: Clock input
       .CNTVALUEIN(cnt_value_in),   // 9-bit input: Counter value input
-      .DATAIN('0),           // 1-bit input: Data input from the logic
+      .DATAIN(0),           // 1-bit input: Data input from the logic
       .EN_VTC(en_vtc),           // 1-bit input: Keep delay constant over VT
       .IDATAIN(d_int[n]),         // 1-bit input: Data input from the IOBUF
       .INC(inc),                 // 1-bit input: Increment / Decrement tap delay input
