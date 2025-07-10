@@ -279,7 +279,10 @@ always @* begin
 end
 
 oddr #(
-    .WIDTH(1)
+    .TARGET(TARGET),
+    .IODDR_STYLE(IODDR_STYLE),
+    .WIDTH(1),
+    .INSERT_BUFFERS(INSERT_BUFFERS)
 )
 clk_oddr_inst (
     .clk(USE_CLK90 == "TRUE" ? gmii_gtx_clk_90 : clk),
@@ -289,7 +292,10 @@ clk_oddr_inst (
 );
 
 oddr #(
-    .WIDTH(5)
+    .TARGET(TARGET),
+    .IODDR_STYLE(IODDR_STYLE),
+    .WIDTH(5),
+    .INSERT_BUFFERS(INSERT_BUFFERS)
 )
 data_oddr_inst (
     .clk(clk),
