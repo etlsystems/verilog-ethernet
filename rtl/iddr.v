@@ -103,7 +103,7 @@ IDELAYCTRL #(
 IDELAYCTRL_rx_inst (
     .RDY(rdy_idelay),       // 1-bit output: Ready output
     .REFCLK(refclk), // 1-bit input: Reference clock input
-    .RST(0)        // 1-bit input: Active-High reset input. Asynchronous assert, synchronous deassert to
+    .RST(rst)        // 1-bit input: Active-High reset input. Asynchronous assert, synchronous deassert to
                        // REFCLK.
 );
 
