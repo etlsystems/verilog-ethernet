@@ -52,6 +52,8 @@ module iddr #
     input  wire             load,
     input  wire [8:0]      cnt_value_in,
     output wire [(WIDTH*9)-1:0]      cnt_value_out,
+    input  wire refclk,
+    output wire             rdy_idelay,
     // Data input   
 
     input  wire [WIDTH-1:0] d,
@@ -95,18 +97,27 @@ end else begin
     assign d_int = d;
 end
 
-if (TARGET == "XILINX") begin
-    for (n = 0; n < WIDTH; n = n + 1) begin : iddr
+IDELAYCTRL #(
+    .SIM_DEVICE("ULTRASCALE")  // Set the device version for simulation functionality (ULTRASCALE)
+)
+IDELAYCTRL_rx_inst (
+    .RDY(rdy_idelay),       // 1-bit output: Ready output
+    .REFCLK(refclk), // 1-bit input: Reference clock input
+    .RST(0)        // 1-bit input: Active-High reset input. Asynchronous assert, synchronous deassert to
+                       // REFCLK.
+);
+
+for (n = 0; n < WIDTH; n = n + 1) begin : iddr
       
    IDELAYE3 #(
       .CASCADE("NONE"),          // Cascade setting (MASTER, NONE, SLAVE_END, SLAVE_MIDDLE)
       .DELAY_FORMAT("COUNT"),     // Units of the DELAY_VALUE (COUNT, TIME)
       .DELAY_SRC("IDATAIN"),     // Delay input (DATAIN, IDATAIN)
       .DELAY_TYPE("VARIABLE"),      // Set the type of tap delay line (FIXED, VARIABLE, VAR_LOAD)
-      .DELAY_VALUE(9'h64),           // Input delay value setting
+      .DELAY_VALUE(9'h19),           // Input delay value setting
       .IS_CLK_INVERTED(1'b0),    // Optional inversion for CLK
       .IS_RST_INVERTED(1'b0),    // Optional inversion for RST
-      .REFCLK_FREQUENCY(125.0),  // IDELAYCTRL clock input frequency in MHz (200.0-800.0)
+      .REFCLK_FREQUENCY(300.0),  // IDELAYCTRL clock input frequency in MHz (200.0-800.0)
       .SIM_DEVICE("ULTRASCALE_PLUS"), // Set the device version for simulation functionality (ULTRASCALE)
       .UPDATE_MODE("ASYNC")      // Determines when updates to the delay will take effect (ASYNC, MANUAL, SYNC)
    )
@@ -127,46 +138,7 @@ if (TARGET == "XILINX") begin
       .RST(rst)                  // 1-bit input: Asynchronous Reset to the DELAY_VALUE
    );
 
-    end
-       /* if (IODDR_STYLE == "IODDR") begin
-            IDDR #(
-                .DDR_CLK_EDGE("SAME_EDGE_PIPELINED"),
-                .SRTYPE("ASYNC")
-            )
-            iddr_inst (
-                .Q1(q1[n]),
-                .Q2(q2[n]),
-                .C(clk),
-                .CE(1'b1),
-                .D(),
-                .R(1'b0),
-                .S(1'b0)
-            );
-        end else if (IODDR_STYLE == "IODDR2") begin
-            wire q1_int;
-            reg q1_delay;
-
-            IDDR2 #(
-                .DDR_ALIGNMENT("C0")
-            )
-            iddr_inst (
-                .Q0(q1_int),
-                .Q1(q2[n]),
-                .C0(clk),
-                .C1(~clk),
-                .CE(1'b1),
-                .D(delayed_data_int[n]),
-                .R(1'b0),
-                .S(1'b0)
-            );
-
-            always @(posedge clk) begin
-                q1_delay <= q1_int;
-            end
-
-            assign q1[n] = q1_delay;
-        end
-    end*/
+end
     reg [WIDTH-1:0] d_reg_1 = {WIDTH{1'b0}};
     reg [WIDTH-1:0] d_reg_2 = {WIDTH{1'b0}};
 
@@ -188,52 +160,6 @@ if (TARGET == "XILINX") begin
 
     assign q1 = q_reg_1;
     assign q2 = q_reg_2;
-end else if (TARGET == "ALTERA") begin
-    wire [WIDTH-1:0] q1_int;
-    reg [WIDTH-1:0] q1_delay;
-
-    altddio_in #(
-        .WIDTH(WIDTH),
-        .POWER_UP_HIGH("OFF")
-    )
-    altddio_in_inst (
-        .aset(1'b0),
-        .datain(d_int),
-        .inclocken(1'b1),
-        .inclock(clk),
-        .aclr(1'b0),
-        .dataout_h(q1_int),
-        .dataout_l(q2)
-    );
-
-    always @(posedge clk) begin
-        q1_delay <= q1_int;
-    end
-
-    assign q1 = q1_delay;
-end else begin
-    reg [WIDTH-1:0] d_reg_1 = {WIDTH{1'b0}};
-    reg [WIDTH-1:0] d_reg_2 = {WIDTH{1'b0}};
-
-    reg [WIDTH-1:0] q_reg_1 = {WIDTH{1'b0}};
-    reg [WIDTH-1:0] q_reg_2 = {WIDTH{1'b0}};
-
-    always @(posedge clk) begin
-        d_reg_1 <= d_int;
-    end
-
-    always @(negedge clk) begin
-        d_reg_2 <= d_int;
-    end
-
-    always @(posedge clk) begin
-        q_reg_1 <= d_reg_1;
-        q_reg_2 <= d_reg_2;
-    end
-
-    assign q1 = q_reg_1;
-    assign q2 = q_reg_2;
-end
 
 endgenerate
 

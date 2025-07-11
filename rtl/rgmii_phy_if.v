@@ -97,12 +97,10 @@ module rgmii_phy_if #
     input  wire             en_vtc,
     input  wire             inc,
     input  wire             load,
-    input  wire [8:0]      cnt_value_in,
-    output wire [(5*9)-1:0]      cnt_value_out
-
-
-
-
+    input  wire [8:0]       cnt_value_in,
+    output wire [(5*9)-1:0] cnt_value_out,
+    input  wire             refclk,
+    output wire             rdy_idelay
 );
     // Debug _signal
     wire rgmii_rxc_debug;
@@ -180,7 +178,10 @@ rx_ssio_ddr_inst (
     .inc(inc),
     .load(load),
     .cnt_value_in(cnt_value_in),
-    .cnt_value_out(cnt_value_out)
+    .cnt_value_out(cnt_value_out),
+    .refclk(refclk),
+    .rdy_idelay(rdy_idelay)
+    // Data input   
 );
 
 assign gmii_rx_dv = rgmii_rx_ctl_1;
