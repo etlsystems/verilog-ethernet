@@ -103,7 +103,7 @@ if (TARGET == "XILINX") begin
       .DELAY_FORMAT("COUNT"),     // Units of the DELAY_VALUE (COUNT, TIME)
       .DELAY_SRC("IDATAIN"),     // Delay input (DATAIN, IDATAIN)
       .DELAY_TYPE("VARIABLE"),      // Set the type of tap delay line (FIXED, VARIABLE, VAR_LOAD)
-      .DELAY_VALUE(0),           // Input delay value setting
+      .DELAY_VALUE(9'h64),           // Input delay value setting
       .IS_CLK_INVERTED(1'b0),    // Optional inversion for CLK
       .IS_RST_INVERTED(1'b0),    // Optional inversion for RST
       .REFCLK_FREQUENCY(125.0),  // IDELAYCTRL clock input frequency in MHz (200.0-800.0)
@@ -173,11 +173,11 @@ if (TARGET == "XILINX") begin
     reg [WIDTH-1:0] q_reg_1 = {WIDTH{1'b0}};
     reg [WIDTH-1:0] q_reg_2 = {WIDTH{1'b0}};
 
-    always @(posedge clk) begin
+    always @(negedge clk) begin
         d_reg_1 <= delayed_data_int;
     end
 
-    always @(negedge clk) begin
+    always @(posedge clk) begin
         d_reg_2 <= delayed_data_int;
     end
 
