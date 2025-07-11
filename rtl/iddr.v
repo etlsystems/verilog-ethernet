@@ -75,6 +75,11 @@ Provides a consistent input DDR flip flop across multiple FPGA families
 */
 wire [WIDTH-1:0] d_int;
 wire [WIDTH-1:0] delayed_data_int;
+reg en_ff,en_ff1;
+always @(posedge clk) begin
+    en_ff <= en;
+    en_ff1 <= en_ff;    
+end
 genvar n;
 
 generate
@@ -111,7 +116,7 @@ if (TARGET == "XILINX") begin
       .DATAOUT(delayed_data_int[n]),         // 1-bit output: Delayed data output
       .CASC_IN(0),         // 1-bit input: Cascade delay input from slave ODELAY CASCADE_OUT
       .CASC_RETURN(0), // 1-bit input: Cascade delay returning from slave ODELAY DATAOUT
-      .CE(en),                   // 1-bit input: Active-High enable increment/decrement input
+      .CE(en_ff & ~en_ff1),                   // 1-bit input: Active-High enable increment/decrement input
       .CLK(clk),                 // 1-bit input: Clock input
       .CNTVALUEIN(cnt_value_in),   // 9-bit input: Counter value input
       .DATAIN(0),           // 1-bit input: Data input from the logic
