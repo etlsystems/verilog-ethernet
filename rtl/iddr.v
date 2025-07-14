@@ -145,11 +145,11 @@ end
     reg [WIDTH-1:0] q_reg_1 = {WIDTH{1'b0}};
     reg [WIDTH-1:0] q_reg_2 = {WIDTH{1'b0}};
 
-    always @(negedge clk) begin
+    always @(posedge clk) begin
         d_reg_1 <= delayed_data_int;
     end
 
-    always @(posedge clk) begin
+    always @(negedge clk) begin
         d_reg_2 <= delayed_data_int;
     end
 
