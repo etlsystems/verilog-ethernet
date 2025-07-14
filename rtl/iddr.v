@@ -33,27 +33,15 @@ THE SOFTWARE.
  */
 module iddr #
 (
-    // target ("SIM", "GENERIC", "XILINX", "ALTERA")
-    parameter TARGET = "GENERIC",
-    // IODDR style ("IODDR", "IODDR2")
-    // Use IODDR for Virtex-4, Virtex-5, Virtex-6, 7 Series, Ultrascale
-    // Use IODDR2 for Spartan-6
-    parameter IODDR_STYLE = "IODDR2",
     // Width of register in bits
     parameter WIDTH = 1,
     parameter INSERT_BUFFERS = "FALSE"
 )
 (
     input  wire             clk,
-    input  wire             rst,
-    input  wire             en, 
-    input  wire             en_vtc,
-    input  wire             inc,
-    input  wire             load,
-    input  wire [8:0]      cnt_value_in,
+    // idelay count output
     output wire [(WIDTH*9)-1:0]      cnt_value_out,
     // Data input   
-
     input  wire [WIDTH-1:0] d,
 
     output wire [WIDTH-1:0] q1,
@@ -75,11 +63,7 @@ Provides a consistent input DDR flip flop across multiple FPGA families
 */
 wire [WIDTH-1:0] d_int;
 wire [WIDTH-1:0] delayed_data_int;
-reg en_ff,en_ff1;
-always @(posedge clk) begin
-    en_ff <= en;
-    en_ff1 <= en_ff;    
-end
+
 genvar n;
 
 generate
@@ -96,34 +80,35 @@ end else begin
 end
 
 for (n = 0; n < WIDTH; n = n + 1) begin : iddr
-      
+    // Use IDELAYE3 for Ultrascale and Ultrascale+ devices to adjust delay between clock and data
+    // set delay format to count and delay value to 9'h19 (2 ns at 125 MHz approximate) 
    IDELAYE3 #(
-      .CASCADE("NONE"),          // Cascade setting (MASTER, NONE, SLAVE_END, SLAVE_MIDDLE)
-      .DELAY_FORMAT("COUNT"),     // Units of the DELAY_VALUE (COUNT, TIME)
-      .DELAY_SRC("IDATAIN"),     // Delay input (DATAIN, IDATAIN)
-      .DELAY_TYPE("VARIABLE"),      // Set the type of tap delay line (FIXED, VARIABLE, VAR_LOAD)
-      .DELAY_VALUE(9'h19),           // Input delay value setting
-      .IS_CLK_INVERTED(1'b0),    // Optional inversion for CLK
-      .IS_RST_INVERTED(1'b0),    // Optional inversion for RST
-      .REFCLK_FREQUENCY(300.0),  // IDELAYCTRL clock input frequency in MHz (200.0-800.0)
-      .SIM_DEVICE("ULTRASCALE_PLUS"), // Set the device version for simulation functionality (ULTRASCALE)
-      .UPDATE_MODE("ASYNC")      // Determines when updates to the delay will take effect (ASYNC, MANUAL, SYNC)
+      .CASCADE("NONE"),          
+      .DELAY_FORMAT("COUNT"),  // Units of the DELAY_VALUE (COUNT, TIME)  
+      .DELAY_SRC("IDATAIN"),     
+      .DELAY_TYPE("FIXED"),      
+      .DELAY_VALUE(9'h19),           
+      .IS_CLK_INVERTED(1'b0),    
+      .IS_RST_INVERTED(1'b0),    
+      .REFCLK_FREQUENCY(300.0),  
+      .SIM_DEVICE("ULTRASCALE_PLUS"), 
+      .UPDATE_MODE("ASYNC")      
    )
    IDELAYE3_inst (
-      .CASC_OUT(),       // 1-bit output: Cascade delay output to ODELAY input cascade
-      .CNTVALUEOUT(cnt_value_out[(n*9)+8 : n*9 ]), // 9-bit output: Counter value output
-      .DATAOUT(delayed_data_int[n]),         // 1-bit output: Delayed data output
-      .CASC_IN(0),         // 1-bit input: Cascade delay input from slave ODELAY CASCADE_OUT
-      .CASC_RETURN(0), // 1-bit input: Cascade delay returning from slave ODELAY DATAOUT
-      .CE(en_ff & ~en_ff1),                   // 1-bit input: Active-High enable increment/decrement input
-      .CLK(clk),                 // 1-bit input: Clock input
-      .CNTVALUEIN(cnt_value_in),   // 9-bit input: Counter value input
-      .DATAIN(0),           // 1-bit input: Data input from the logic
-      .EN_VTC(en_vtc),           // 1-bit input: Keep delay constant over VT
-      .IDATAIN(d_int[n]),         // 1-bit input: Data input from the IOBUF
-      .INC(inc),                 // 1-bit input: Increment / Decrement tap delay input
-      .LOAD(load),               // 1-bit input: Load DELAY_VALUE input
-      .RST(rst)                  // 1-bit input: Asynchronous Reset to the DELAY_VALUE
+      .CASC_OUT(),       
+      .CNTVALUEOUT(cnt_value_out[(n*9)+8 : n*9 ]), 
+      .DATAOUT(delayed_data_int[n]),         
+      .CASC_IN(0),        
+      .CASC_RETURN(0), 
+      .CE(0),                  
+      .CLK(clk),                
+      .CNTVALUEIN(0),  
+      .DATAIN(0),           
+      .EN_VTC(0),          
+      .IDATAIN(d_int[n]),        
+      .INC(0),                
+      .LOAD(0),              
+      .RST(0)
    );
 
 end
@@ -133,11 +118,11 @@ end
     reg [WIDTH-1:0] q_reg_1 = {WIDTH{1'b0}};
     reg [WIDTH-1:0] q_reg_2 = {WIDTH{1'b0}};
 
-    always @(negedge clk) begin
+    always @(posedge clk) begin
         d_reg_1 <= delayed_data_int;
     end
 
-    always @(posedge clk) begin
+    always @(negedge clk) begin
         d_reg_2 <= delayed_data_int;
     end
 

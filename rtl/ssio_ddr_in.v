@@ -35,10 +35,6 @@ module ssio_ddr_in #
 (
     // target ("SIM", "GENERIC", "XILINX", "ALTERA")
     parameter TARGET = "GENERIC",
-    // IODDR style ("IODDR", "IODDR2")
-    // Use IODDR for Virtex-4, Virtex-5, Virtex-6, 7 Series, Ultrascale
-    // Use IODDR2 for Spartan-6
-    parameter IODDR_STYLE = "IODDR2",
     // Clock input style ("BUFG", "BUFR", "BUFIO", "BUFIO2")
     // Use BUFR for Virtex-6, 7-series
     // Use BUFG for Virtex-5, Spartan-6, Ultrascale
@@ -56,13 +52,7 @@ module ssio_ddr_in #
 
     output wire [WIDTH-1:0] output_q1,
     output wire [WIDTH-1:0] output_q2,
-
-    input  wire             rst,
-    input  wire             en, 
-    input  wire             en_vtc,
-    input  wire             inc,
-    input  wire             load,
-    input  wire [8:0]      cnt_value_in,
+    // idelay count output
     output wire [(WIDTH*9)-1:0]      cnt_value_out
 );
 
@@ -156,8 +146,6 @@ endgenerate
 
 
 iddr #(
-    .TARGET(TARGET),
-    .IODDR_STYLE(IODDR_STYLE),
     .WIDTH(WIDTH),
     .INSERT_BUFFERS(INSERT_BUFFERS)
 )
@@ -166,12 +154,6 @@ data_iddr_inst (
     .d(input_d),
     .q1(output_q1),
     .q2(output_q2),
-    .rst(rst),
-    .en(en), 
-    .en_vtc(en_vtc),
-    .inc(inc),
-    .load(load),
-    .cnt_value_in(cnt_value_in),
     .cnt_value_out(cnt_value_out)
 
 );

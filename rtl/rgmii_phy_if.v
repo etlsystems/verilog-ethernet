@@ -88,79 +88,25 @@ module rgmii_phy_if #
      // 2'b01: 100M
      // 2'b00: 10M
     input  wire [1:0]  speed,
-    output wire [47:0] debug_rgmii,
-    output wire rx_rgmii_clk,
     output wire rx_gmii_clk,
 
-    input  wire             rst_idelay,
-    input  wire             en, 
-    input  wire             en_vtc,
-    input  wire             inc,
-    input  wire             load,
-    input  wire [8:0]       cnt_value_in,
     output wire [(5*9)-1:0] cnt_value_out
 );
-    // Debug _signal
-    wire rgmii_rxc_debug;
-    wire [3:0] rgmii_rd_debug;
-    wire rgmii_rx_ctl_debug;
-    wire rgmii_txc_debug;
-    wire [3:0] rgmii_td_debug;
-    wire rgmii_tx_ctl_debug;
 
-    wire        gmii_rx_clk_debug;
-    wire [7:0]  gmii_rxd_debug;
-    wire        gmii_rx_dv_debug;
-    wire        gmii_rx_er_debug;
 
-    wire         gmii_gtx_clk_debug;
-     wire [7:0]  gmii_txd_debug;
-     wire        gmii_tx_en_debug;
-     wire        gmii_tx_er_debug;
-    assign rgmii_rxc_debug = 0;
-    assign rgmii_rd_debug = 0;
-    assign rgmii_rx_ctl_debug = 0;
-    assign rgmii_txc_debug = 0;
-    assign rgmii_td_debug   = 0;
-    assign rgmii_tx_ctl_debug = 0;
-
-    assign gmii_rx_clk_debug = gmii_rx_clk;
-    assign gmii_rxd_debug = gmii_rxd;
-    assign gmii_rx_dv_debug= gmii_rx_dv;
-    assign gmii_rx_er_debug= gmii_rx_er;
-
-    assign gmii_gtx_clk_debug= gmii_gtx_clk;
-    assign gmii_txd_debug= gmii_txd;
-    assign gmii_tx_en_debug= gmii_tx_en;
-    assign gmii_tx_er_debug= gmii_tx_er;
-    assign debug_rgmii = {rgmii_rxc_debug,
-    rgmii_rd_debug,
-    rgmii_rx_ctl_debug,
-    rgmii_txc_debug,
-    rgmii_td_debug,
-    rgmii_tx_ctl_debug,
-    gmii_rx_clk_debug,
-    gmii_rxd_debug,
-    gmii_rx_dv_debug,
-    gmii_rx_er_debug,
-    gmii_gtx_clk_debug,
-    gmii_txd_debug,
-    gmii_tx_en_debug,
-    gmii_tx_er_debug};
-    assign rx_gmii_clk = gmii_rx_clk_debug;
-    assign rx_rgmii_clk = rgmii_rxc_debug;
 wire clk;
 
 // receive
-
 wire rgmii_rx_ctl_1;
 wire rgmii_rx_ctl_2;
+
+// for ila-debug
+assign rx_gmii_clk = gmii_rx_clk;
 
 ssio_ddr_in #
 (
     .TARGET(TARGET),
     .CLOCK_INPUT_STYLE(CLOCK_INPUT_STYLE),
-    .IODDR_STYLE(IODDR_STYLE),
     .WIDTH(5),
     .INSERT_BUFFERS(INSERT_BUFFERS)
 )
@@ -170,14 +116,7 @@ rx_ssio_ddr_inst (
     .output_clk(gmii_rx_clk),
     .output_q1({gmii_rxd[3:0], rgmii_rx_ctl_1}),
     .output_q2({gmii_rxd[7:4], rgmii_rx_ctl_2}),
-    .rst(rst_idelay),
-    .en(en), 
-    .en_vtc(en_vtc),
-    .inc(inc),
-    .load(load),
-    .cnt_value_in(cnt_value_in),
     .cnt_value_out(cnt_value_out)
-    // Data input   
 );
 
 assign gmii_rx_dv = rgmii_rx_ctl_1;
