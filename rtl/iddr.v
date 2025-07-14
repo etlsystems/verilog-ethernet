@@ -52,8 +52,6 @@ module iddr #
     input  wire             load,
     input  wire [8:0]      cnt_value_in,
     output wire [(WIDTH*9)-1:0]      cnt_value_out,
-    input  wire refclk,
-    output wire             rdy_idelay,
     // Data input   
 
     input  wire [WIDTH-1:0] d,
@@ -96,16 +94,6 @@ if (INSERT_BUFFERS == "TRUE") begin
 end else begin
     assign d_int = d;
 end
-
-IDELAYCTRL #(
-    .SIM_DEVICE("ULTRASCALE")  // Set the device version for simulation functionality (ULTRASCALE)
-)
-IDELAYCTRL_rx_inst (
-    .RDY(rdy_idelay),       // 1-bit output: Ready output
-    .REFCLK(refclk), // 1-bit input: Reference clock input
-    .RST(rst)        // 1-bit input: Active-High reset input. Asynchronous assert, synchronous deassert to
-                       // REFCLK.
-);
 
 for (n = 0; n < WIDTH; n = n + 1) begin : iddr
       

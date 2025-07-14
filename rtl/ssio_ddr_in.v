@@ -63,9 +63,7 @@ module ssio_ddr_in #
     input  wire             inc,
     input  wire             load,
     input  wire [8:0]      cnt_value_in,
-    output wire [(WIDTH*9)-1:0]      cnt_value_out,
-    input  wire             refclk,
-    output wire             rdy_idelay
+    output wire [(WIDTH*9)-1:0]      cnt_value_out
 );
 
 wire input_clk_int;
@@ -174,9 +172,7 @@ data_iddr_inst (
     .inc(inc),
     .load(load),
     .cnt_value_in(cnt_value_in),
-    .cnt_value_out(cnt_value_out),
-    .refclk(refclk),
-    .rdy_idelay(rdy_idelay)
+    .cnt_value_out(cnt_value_out)
 
 );
 
