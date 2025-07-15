@@ -34,11 +34,11 @@ THE SOFTWARE.
 module oddr #
 (
     // target ("SIM", "GENERIC", "XILINX", "ALTERA")
-    parameter TARGET = "XILINX",
+    parameter TARGET = "GENERIC",
     // IODDR style ("IODDR", "IODDR2")
     // Use IODDR for Virtex-4, Virtex-5, Virtex-6, 7 Series, Ultrascale
     // Use IODDR2 for Spartan-6
-    parameter IODDR_STYLE = "IODDR",
+    parameter IODDR_STYLE = "IODDR2",
     // Width of register in bits
     parameter WIDTH = 1,
     parameter INSERT_BUFFERS = "FALSE"
@@ -87,11 +87,11 @@ if (TARGET == "XILINX") begin
                 .R(1'b0),
                 .S(1'b0)
             );
-       end else if (IODDR_STYLE == "IODDR2") begin
+        end else if (IODDR_STYLE == "IODDR2") begin
             ODDR2 #(
                 .DDR_ALIGNMENT("C0"),
                 .SRTYPE("ASYNC")
-           )
+            )
             oddr_inst (
                 .Q(q_int[n]),
                 .C0(clk),
