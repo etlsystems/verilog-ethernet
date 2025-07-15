@@ -90,7 +90,6 @@ module rgmii_phy_if #
     input  wire [1:0]  speed
 );
 
-
 wire clk;
 
 // receive

@@ -80,35 +80,34 @@ end
 for (n = 0; n < WIDTH; n = n + 1) begin : iddr
     // Use IDELAYE3 for Ultrascale and Ultrascale+ devices to adjust delay between clock and data
     // found delay count value by sweeping and checking the output
-   IDELAYE3 #(
-      .CASCADE("NONE"),          
-      .DELAY_FORMAT("COUNT"),  // Units of the DELAY_VALUE (COUNT, TIME)  
-      .DELAY_SRC("IDATAIN"),     
-      .DELAY_TYPE("FIXED"),      
-      .DELAY_VALUE(9'h19),           
-      .IS_CLK_INVERTED(1'b0),    
-      .IS_RST_INVERTED(1'b0),    
-      .REFCLK_FREQUENCY(300.0),  
-      .SIM_DEVICE("ULTRASCALE_PLUS"), 
-      .UPDATE_MODE("ASYNC")      
-   )
-   IDELAYE3_inst (
-      .CASC_OUT(),       
-      .CNTVALUEOUT(cnt_value_out[(n*9)+8 : n*9 ]), 
-      .DATAOUT(delayed_data_int[n]),         
-      .CASC_IN(0),        
-      .CASC_RETURN(0), 
-      .CE(0),                  
-      .CLK(clk),                
-      .CNTVALUEIN(0),  
-      .DATAIN(0),           
-      .EN_VTC(0),          
-      .IDATAIN(d_int[n]),        
-      .INC(0),                
-      .LOAD(0),              
-      .RST(0)
-   );
-
+    IDELAYE3 #(
+        .CASCADE("NONE"),          
+        .DELAY_FORMAT("COUNT"),  // Units of the DELAY_VALUE (COUNT, TIME)  
+        .DELAY_SRC("IDATAIN"),     
+        .DELAY_TYPE("FIXED"),      
+        .DELAY_VALUE(9'h19),           
+        .IS_CLK_INVERTED(1'b0),    
+        .IS_RST_INVERTED(1'b0),    
+        .REFCLK_FREQUENCY(300.0),  
+        .SIM_DEVICE("ULTRASCALE_PLUS"), 
+        .UPDATE_MODE("ASYNC")      
+    )
+    IDELAYE3_inst (
+        .CASC_OUT(),       
+        .CNTVALUEOUT(), 
+        .DATAOUT(delayed_data_int[n]),         
+        .CASC_IN(0),        
+        .CASC_RETURN(0), 
+        .CE(0),                  
+        .CLK(clk),                
+        .CNTVALUEIN(0),  
+        .DATAIN(0),           
+        .EN_VTC(0),          
+        .IDATAIN(d_int[n]),        
+        .INC(0),                
+        .LOAD(0),              
+        .RST(0)
+    );
 end
     reg [WIDTH-1:0] d_reg_1 = {WIDTH{1'b0}};
     reg [WIDTH-1:0] d_reg_2 = {WIDTH{1'b0}};
@@ -128,7 +127,7 @@ end
         q_reg_1 <= d_reg_1;
         q_reg_2 <= d_reg_2;
     end
-
+    
     assign q1 = q_reg_1;
     assign q2 = q_reg_2;
 
