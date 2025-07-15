@@ -34,18 +34,20 @@ THE SOFTWARE.
 module rgmii_phy_if #
 (
     // target ("SIM", "GENERIC", "XILINX", "ALTERA")
-    parameter TARGET = "GENERIC",
+    parameter TARGET = "XILINX",
     // IODDR style ("IODDR", "IODDR2")
     // Use IODDR for Virtex-4, Virtex-5, Virtex-6, 7 Series, Ultrascale
     // Use IODDR2 for Spartan-6
-    parameter IODDR_STYLE = "IODDR2",
+    parameter IODDR_STYLE = "IODDR",
     // Clock input style ("BUFG", "BUFR", "BUFIO", "BUFIO2")
     // Use BUFR for Virtex-6, 7-series
     // Use BUFG for Virtex-5, Spartan-6, Ultrascale
-    parameter CLOCK_INPUT_STYLE = "BUFG",
+    parameter CLOCK_INPUT_STYLE = "BUFIO",
     // Use 90 degree clock for RGMII transmit ("TRUE", "FALSE")
     parameter USE_CLK90 = "TRUE",
-    parameter INSERT_BUFFERS = "TRUE"
+    parameter INSERT_BUFFERS = "TRUE",
+    // Delay value for input data in count or time units
+    parameter [8:0] DELAY_VALUE = 9'h19
 )
 (
     // Reset, synchronous to gmii_gtx_clk
@@ -93,7 +95,6 @@ module rgmii_phy_if #
 wire clk;
 
 // receive
-
 wire rgmii_rx_ctl_1;
 wire rgmii_rx_ctl_2;
 
@@ -101,9 +102,9 @@ ssio_ddr_in #
 (
     .TARGET(TARGET),
     .CLOCK_INPUT_STYLE(CLOCK_INPUT_STYLE),
-    .IODDR_STYLE(IODDR_STYLE),
     .WIDTH(5),
-    .INSERT_BUFFERS(INSERT_BUFFERS)
+    .INSERT_BUFFERS(INSERT_BUFFERS),
+    .DELAY_VALUE (DELAY_VALUE)
 )
 rx_ssio_ddr_inst (
     .input_clk(rgmii_rxc),

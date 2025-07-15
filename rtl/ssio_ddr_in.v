@@ -35,17 +35,14 @@ module ssio_ddr_in #
 (
     // target ("SIM", "GENERIC", "XILINX", "ALTERA")
     parameter TARGET = "GENERIC",
-    // IODDR style ("IODDR", "IODDR2")
-    // Use IODDR for Virtex-4, Virtex-5, Virtex-6, 7 Series, Ultrascale
-    // Use IODDR2 for Spartan-6
-    parameter IODDR_STYLE = "IODDR2",
     // Clock input style ("BUFG", "BUFR", "BUFIO", "BUFIO2")
     // Use BUFR for Virtex-6, 7-series
     // Use BUFG for Virtex-5, Spartan-6, Ultrascale
     parameter CLOCK_INPUT_STYLE = "BUFG",
     // Width of register in bits
     parameter WIDTH = 1,
-    parameter INSERT_BUFFERS = "FALSE"
+    parameter INSERT_BUFFERS = "FALSE",
+    parameter [8:0] DELAY_VALUE = 9'h19
 )
 (
     input  wire             input_clk,
@@ -145,11 +142,12 @@ end
 
 endgenerate
 
+
+
 iddr #(
-    .TARGET(TARGET),
-    .IODDR_STYLE(IODDR_STYLE),
     .WIDTH(WIDTH),
-    .INSERT_BUFFERS(INSERT_BUFFERS)
+    .INSERT_BUFFERS(INSERT_BUFFERS),
+    .DELAY_VALUE(DELAY_VALUE)
 )
 data_iddr_inst (
     .clk(clk_io),
