@@ -192,9 +192,7 @@ module eth_mac_1g #
     input  wire [15:0]                  cfg_rx_lfc_opcode,
     input  wire                         cfg_rx_lfc_en,
     input  wire [15:0]                  cfg_rx_pfc_opcode,
-    input  wire                         cfg_rx_pfc_en,
-
-    output wire [31:0] debug
+    input  wire                         cfg_rx_pfc_en
 );
 
 localparam MAC_CTRL_ENABLE = PAUSE_ENABLE || PFC_ENABLE;
@@ -213,7 +211,6 @@ wire [RX_USER_WIDTH-1:0]  rx_axis_tuser_int;
 
 assign gmii_gtx_clk = tx_clk;
 assign rx_axis_clk = gmii_rx_clk;
-assign debug = {rx_axis_tdata,rx_axis_tvalid,rx_axis_tlast,rx_axis_tuser,gmii_rxd,gmii_rx_dv,gmii_rx_er};
 
 axis_gmii_rx #(
     .DATA_WIDTH(DATA_WIDTH),
