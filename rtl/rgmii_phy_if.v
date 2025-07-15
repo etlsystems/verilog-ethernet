@@ -87,10 +87,7 @@ module rgmii_phy_if #
      // 2'b10: 1G
      // 2'b01: 100M
      // 2'b00: 10M
-    input  wire [1:0]  speed,
-    output wire rx_gmii_clk,
-
-    output wire [(5*9)-1:0] cnt_value_out
+    input  wire [1:0]  speed
 );
 
 
@@ -99,9 +96,6 @@ wire clk;
 // receive
 wire rgmii_rx_ctl_1;
 wire rgmii_rx_ctl_2;
-
-// for ila-debug
-assign rx_gmii_clk = gmii_rx_clk;
 
 ssio_ddr_in #
 (
@@ -115,8 +109,7 @@ rx_ssio_ddr_inst (
     .input_d({rgmii_rd, rgmii_rx_ctl}),
     .output_clk(gmii_rx_clk),
     .output_q1({gmii_rxd[3:0], rgmii_rx_ctl_1}),
-    .output_q2({gmii_rxd[7:4], rgmii_rx_ctl_2}),
-    .cnt_value_out(cnt_value_out)
+    .output_q2({gmii_rxd[7:4], rgmii_rx_ctl_2})
 );
 
 assign gmii_rx_dv = rgmii_rx_ctl_1;

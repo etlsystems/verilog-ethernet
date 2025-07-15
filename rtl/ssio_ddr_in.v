@@ -51,9 +51,7 @@ module ssio_ddr_in #
     output wire             output_clk,
 
     output wire [WIDTH-1:0] output_q1,
-    output wire [WIDTH-1:0] output_q2,
-    // idelay count output
-    output wire [(WIDTH*9)-1:0]      cnt_value_out
+    output wire [WIDTH-1:0] output_q2
 );
 
 wire input_clk_int;
@@ -153,9 +151,7 @@ data_iddr_inst (
     .clk(clk_io),
     .d(input_d),
     .q1(output_q1),
-    .q2(output_q2),
-    .cnt_value_out(cnt_value_out)
-
+    .q2(output_q2)
 );
 
 endmodule

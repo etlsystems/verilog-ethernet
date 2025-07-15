@@ -39,8 +39,6 @@ module iddr #
 )
 (
     input  wire             clk,
-    // idelay count output
-    output wire [(WIDTH*9)-1:0]      cnt_value_out,
     // Data input   
     input  wire [WIDTH-1:0] d,
 
@@ -81,7 +79,7 @@ end
 
 for (n = 0; n < WIDTH; n = n + 1) begin : iddr
     // Use IDELAYE3 for Ultrascale and Ultrascale+ devices to adjust delay between clock and data
-    // set delay format to count and delay value to 9'h19 (2 ns at 125 MHz approximate) 
+    // found delay count value by sweeping and checking the output
    IDELAYE3 #(
       .CASCADE("NONE"),          
       .DELAY_FORMAT("COUNT"),  // Units of the DELAY_VALUE (COUNT, TIME)  
