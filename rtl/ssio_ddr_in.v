@@ -41,7 +41,8 @@ module ssio_ddr_in #
     parameter CLOCK_INPUT_STYLE = "BUFG",
     // Width of register in bits
     parameter WIDTH = 1,
-    parameter INSERT_BUFFERS = "FALSE"
+    parameter INSERT_BUFFERS = "FALSE",
+    parameter [8:0] DELAY_VALUE = 9'h19
 )
 (
     input  wire             input_clk,
@@ -145,7 +146,8 @@ endgenerate
 
 iddr #(
     .WIDTH(WIDTH),
-    .INSERT_BUFFERS(INSERT_BUFFERS)
+    .INSERT_BUFFERS(INSERT_BUFFERS),
+    .DELAY_VALUE(DELAY_VALUE)
 )
 data_iddr_inst (
     .clk(clk_io),

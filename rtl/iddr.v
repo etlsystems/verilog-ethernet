@@ -35,7 +35,9 @@ module iddr #
 (
     // Width of register in bits
     parameter WIDTH = 1,
-    parameter INSERT_BUFFERS = "FALSE"
+    parameter INSERT_BUFFERS = "FALSE",
+    // Can be count or time depending on delay type
+    parameter [8:0] DELAY_VALUE = 9'h19
 )
 (
     input  wire             clk,
@@ -127,7 +129,7 @@ end
         q_reg_1 <= d_reg_1;
         q_reg_2 <= d_reg_2;
     end
-    
+
     assign q1 = q_reg_1;
     assign q2 = q_reg_2;
 

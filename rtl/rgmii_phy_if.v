@@ -45,7 +45,9 @@ module rgmii_phy_if #
     parameter CLOCK_INPUT_STYLE = "BUFIO",
     // Use 90 degree clock for RGMII transmit ("TRUE", "FALSE")
     parameter USE_CLK90 = "TRUE",
-    parameter INSERT_BUFFERS = "TRUE"
+    parameter INSERT_BUFFERS = "TRUE",
+    // Delay value for input data in count or time units
+    parameter [8:0] DELAY_VALUE = 9'h19
 )
 (
     // Reset, synchronous to gmii_gtx_clk
@@ -101,7 +103,8 @@ ssio_ddr_in #
     .TARGET(TARGET),
     .CLOCK_INPUT_STYLE(CLOCK_INPUT_STYLE),
     .WIDTH(5),
-    .INSERT_BUFFERS(INSERT_BUFFERS)
+    .INSERT_BUFFERS(INSERT_BUFFERS),
+    .DELAY_VALUE (DELAY_VALUE)
 )
 rx_ssio_ddr_inst (
     .input_clk(rgmii_rxc),
