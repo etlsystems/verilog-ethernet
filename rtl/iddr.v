@@ -87,7 +87,7 @@ for (n = 0; n < WIDTH; n = n + 1) begin : iddr
         .DELAY_FORMAT("COUNT"),  // Units of the DELAY_VALUE (COUNT, TIME)  
         .DELAY_SRC("IDATAIN"),     
         .DELAY_TYPE("FIXED"),      
-        .DELAY_VALUE(9'h19),           
+        .DELAY_VALUE(DELAY_VALUE),           
         .IS_CLK_INVERTED(1'b0),    
         .IS_RST_INVERTED(1'b0),    
         .REFCLK_FREQUENCY(300.0),  
