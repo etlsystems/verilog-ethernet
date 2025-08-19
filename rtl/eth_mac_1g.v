@@ -196,10 +196,9 @@ module eth_mac_1g #
 
     // debug
     output clk_out,
-    output wire [DATA_WIDTH-1:0]      s_axis_tdata_out,
-    output  wire                      s_axis_tvalid_out,
-    output wire                       s_axis_tready_out,
-    output  wire                      s_axis_tlast_out,
+    output wire [DATA_WIDTH-1:0]      tdata_out,
+    output  wire                      talid_out,
+    output  wire                      last_out,
     output  wire                      clk_enable_out,
     output  wire                      mii_select_out,
     output  wire                      cfg_tx_enable_out,
@@ -287,10 +286,9 @@ axis_gmii_tx_inst (
     .start_packet(tx_start_packet),
     .error_underflow(tx_error_underflow),
     .clk_out(clk_out),
-    .s_axis_tdata_out(s_axis_tdata_out),
-    .s_axis_tvalid_out(s_axis_tvalid_out),
-    .s_axis_tready_out(s_axis_tready_out),
-    .s_axis_tlast_out(s_axis_tlast_out),
+    .tdata_out(tdata_out),
+    .talid_out(talid_out),
+    .tlast_out(tlast_out),
     .clk_enable_out(clk_enable_out),
     .mii_select_out(mii_select_out),
     .cfg_tx_enable_out(cfg_tx_enable_out),
@@ -460,17 +458,7 @@ if (MAC_CTRL_ENABLE) begin : mac_ctrl
     )
     mac_ctrl_rx_inst (
         .clk(gmii_rx_clk),
-        .rst(gmii_rx_rst),
-
-        /*
-         * AXI stream input
-         */
-        .s_axis_tdata(rx_axis_tdata_int),
-        .s_axis_tkeep(1'b1),
-        .s_axis_tvalid(rx_axis_tvalid_int),
-        .s_axis_tready(),
-        .s_axis_tlast(rx_axis_tlast_int),
-        .s_axis_tid(0),
+        .rst(gmii_rx_rst),s_axis_t
         .s_axis_tdest(0),
         .s_axis_tuser(rx_axis_tuser_int),
 
