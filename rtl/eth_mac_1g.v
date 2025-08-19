@@ -192,7 +192,24 @@ module eth_mac_1g #
     input  wire [15:0]                  cfg_rx_lfc_opcode,
     input  wire                         cfg_rx_lfc_en,
     input  wire [15:0]                  cfg_rx_pfc_opcode,
-    input  wire                         cfg_rx_pfc_en
+    input  wire                         cfg_rx_pfc_en,
+
+    // debug
+    output clk_out,
+    output wire [DATA_WIDTH-1:0]      s_axis_tdata_out,
+    output  wire                      s_axis_tvalid_out,
+    output wire                       s_axis_tready_out,
+    output  wire                      s_axis_tlast_out,
+    output  wire                      clk_enable_out,
+    output  wire                      mii_select_out,
+    output  wire                      cfg_tx_enable_out,
+    output wire                       start_packet_out,
+    output wire                       error_underflow_out,
+    output [2:0]                      state_reg_out,
+
+    output wire [DATA_WIDTH-1:0]     gmii_txd_out,
+    output wire                      gmii_tx_en_out,
+    output wire                      gmii_tx_er_out
 );
 
 localparam MAC_CTRL_ENABLE = PAUSE_ENABLE || PFC_ENABLE;
@@ -268,7 +285,22 @@ axis_gmii_tx_inst (
     .cfg_ifg(cfg_ifg),
     .cfg_tx_enable(cfg_tx_enable),
     .start_packet(tx_start_packet),
-    .error_underflow(tx_error_underflow)
+    .error_underflow(tx_error_underflow),
+    .clk_out(clk_out),
+    .s_axis_tdata_out(s_axis_tdata_out),
+    .s_axis_tvalid_out(s_axis_tvalid_out),
+    .s_axis_tready_out(s_axis_tready_out),
+    .s_axis_tlast_out(s_axis_tlast_out),
+    .clk_enable_out(clk_enable_out),
+    .mii_select_out(mii_select_out),
+    .cfg_tx_enable_out(cfg_tx_enable_out),
+    .start_packet_out(start_packet_out),
+    .error_underflow_out(error_underflow_out),
+    .state_reg_out(state_reg_out),
+
+    .gmii_txd_out(gmii_txd_out),
+    .gmii_tx_en_out(gmii_tx_en_out),
+    .gmii_tx_er_out(gmii_tx_er_out)
 );
 
 generate

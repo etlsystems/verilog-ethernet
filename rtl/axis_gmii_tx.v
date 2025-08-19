@@ -87,7 +87,27 @@ module axis_gmii_tx #
      * Status
      */
     output wire                      start_packet,
-    output wire                      error_underflow
+    output wire                      error_underflow,
+
+
+    // Debug ports
+
+    output clk_out,
+    output wire [DATA_WIDTH-1:0]      s_axis_tdata_out,
+    output  wire                      s_axis_tvalid_out,
+    output wire                       s_axis_tready_out,
+    output  wire                      s_axis_tlast_out,
+    output  wire                      clk_enable_out,
+    output  wire                      mii_select_out,
+    output  wire                      cfg_tx_enable_out,
+    output wire                       start_packet_out,
+    output wire                       error_underflow_out,
+    output [2:0]                      state_reg_out,
+
+    output wire [DATA_WIDTH-1:0]     gmii_txd_out,
+    output wire                      gmii_tx_en_out,
+    output wire                      gmii_tx_er_out
+
 );
 
 localparam MIN_LEN_WIDTH = $clog2(MIN_FRAME_LENGTH-4-1+1);
@@ -158,6 +178,25 @@ assign m_axis_ptp_ts_valid = PTP_TS_ENABLE || PTP_TAG_ENABLE ? m_axis_ptp_ts_val
 
 assign start_packet = start_packet_reg;
 assign error_underflow = error_underflow_reg;
+
+
+// debug
+
+assign clk_out =clk;
+assign s_axis_tdata_out=s_axis_tdata;
+assign s_axis_tvalid_out=s_axis_tvalid;
+assign s_axis_tready_out=s_axis_tready;
+assign s_axis_tlast_out=s_axis_tlast;
+assign clk_enable_out=clk_enable;
+assign mii_select_out=mii_select;
+assign cfg_tx_enable_out=cfg_tx_enable;
+assign start_packet_out=start_packet;
+assign error_underflow_out=error_underflow;
+assign state_reg_out=state_reg;
+
+assign gmii_txd_out=gmii_txd;
+assign gmii_tx_en_out = gmii_tx_en;
+assign gmii_tx_er_out = gmii_tx_er;
 
 lfsr #(
     .LFSR_WIDTH(32),
