@@ -101,7 +101,7 @@ module axis_gmii_tx #
     output  wire                      cfg_tx_enable_out,
     output wire                       start_packet_out,
     output wire                       error_underflow_out,
-    output [2:0]                      state_reg_out,
+    output wire [2:0]                      state_reg_out,
 
     output wire [DATA_WIDTH-1:0]     gmii_txd_out,
     output wire                      gmii_tx_en_out,
@@ -182,10 +182,9 @@ assign error_underflow = error_underflow_reg;
 // debug
 
 assign clk_out =clk;
-assign s_axis_tdata_out=s_axis_tdata;
-assign s_axis_tvalid_out=s_axis_tvalid;
-assign s_axis_tready_out=s_axis_tready;
-assign s_axis_tlast_out=s_axis_tlast;
+assign tdata_out=s_axis_tdata;
+assign talid_out=s_axis_tvalid;
+assign tlast_out=s_axis_tlast;
 assign clk_enable_out=clk_enable;
 assign mii_select_out=mii_select;
 assign cfg_tx_enable_out=cfg_tx_enable;
