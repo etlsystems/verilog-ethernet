@@ -458,7 +458,7 @@ if (MAC_CTRL_ENABLE) begin : mac_ctrl
     )
     mac_ctrl_rx_inst (
         .clk(gmii_rx_clk),
-        .rst(gmii_rx_rst),s_axis_t
+        .rst(gmii_rx_rst),
         .s_axis_tdest(0),
         .s_axis_tuser(rx_axis_tuser_int),
 
