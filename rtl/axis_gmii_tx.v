@@ -92,7 +92,7 @@ module axis_gmii_tx #
 
     // Debug ports
 
-    output clk_out,
+    output wire clk_out,
     output wire [DATA_WIDTH-1:0]      tdata_out,
     output  wire                      talid_out,
     output  wire                      last_out,
