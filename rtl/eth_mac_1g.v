@@ -288,7 +288,7 @@ axis_gmii_tx_inst (
     .clk_out(clk_out),
     .tdata_out(tdata_out),
     .talid_out(talid_out),
-    .tlast_out(tlast_out),
+    .last_out(last_out),
     .clk_enable_out(clk_enable_out),
     .mii_select_out(mii_select_out),
     .cfg_tx_enable_out(cfg_tx_enable_out),
