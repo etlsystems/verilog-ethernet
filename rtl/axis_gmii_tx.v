@@ -93,10 +93,9 @@ module axis_gmii_tx #
     // Debug ports
 
     output clk_out,
-    output wire [DATA_WIDTH-1:0]      s_axis_tdata_out,
-    output  wire                      s_axis_tvalid_out,
-    output wire                       s_axis_tready_out,
-    output  wire                      s_axis_tlast_out,
+    output wire [DATA_WIDTH-1:0]      tdata_out,
+    output  wire                      talid_out,
+    output  wire                      last_out,
     output  wire                      clk_enable_out,
     output  wire                      mii_select_out,
     output  wire                      cfg_tx_enable_out,
