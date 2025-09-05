@@ -36,6 +36,7 @@ module axis_gmii_rx #
     parameter DATA_WIDTH = 8,
     parameter PTP_TS_ENABLE = 0,
     parameter PTP_TS_WIDTH = 96,
+    parameter EXCLUDE_CRC = 0,
     parameter USER_WIDTH = (PTP_TS_ENABLE ? PTP_TS_WIDTH : 0) + 1
 )
 (
@@ -125,10 +126,14 @@ reg gmii_rx_er_d2 = 1'b0;
 reg gmii_rx_er_d3 = 1'b0;
 reg gmii_rx_er_d4 = 1'b0;
 
-reg [DATA_WIDTH-1:0] m_axis_tdata_reg = {DATA_WIDTH{1'b0}}, m_axis_tdata_next;
-reg m_axis_tvalid_reg = 1'b0, m_axis_tvalid_next;
-reg m_axis_tlast_reg = 1'b0, m_axis_tlast_next;
-reg m_axis_tuser_reg = 1'b0, m_axis_tuser_next;
+reg [(5*DATA_WIDTH)-1:0] m_axis_tdata_reg;
+reg [DATA_WIDTH-1:0] m_axis_tdata_next;
+reg [4:0] m_axis_tvalid_reg = 5'b0;
+reg m_axis_tvalid_next;
+reg [4:0] m_axis_tlast_reg = 5'b0;
+reg m_axis_tlast_next;
+reg [4:0] m_axis_tuser_reg = 5'b0;
+reg m_axis_tuser_next;
 
 reg start_packet_int_reg = 1'b0;
 reg start_packet_reg = 1'b0;
@@ -140,10 +145,10 @@ reg [PTP_TS_WIDTH-1:0] ptp_ts_reg = 0;
 reg [31:0] crc_state = 32'hFFFFFFFF;
 wire [31:0] crc_next;
 
-assign m_axis_tdata = m_axis_tdata_reg;
-assign m_axis_tvalid = m_axis_tvalid_reg;
-assign m_axis_tlast = m_axis_tlast_reg;
-assign m_axis_tuser = PTP_TS_ENABLE ? {ptp_ts_reg, m_axis_tuser_reg} : m_axis_tuser_reg;
+assign m_axis_tdata  = EXCLUDE_CRC ? m_axis_tdata_reg[(5*DATA_WIDTH)-1:4*DATA_WIDTH]  : m_axis_tdata_reg[DATA_WIDTH-1:0];
+assign m_axis_tvalid = EXCLUDE_CRC ? m_axis_tvalid_reg[4] & ~(|m_axis_tlast_reg[4:1]) : m_axis_tvalid_reg[0];
+assign m_axis_tlast  = m_axis_tlast_reg[0];
+assign m_axis_tuser  = PTP_TS_ENABLE ? {ptp_ts_reg, EXCLUDE_CRC? m_axis_tuser_reg[4] : m_axis_tuser_reg[0]} : (EXCLUDE_CRC ? m_axis_tuser_reg[4] : m_axis_tuser_reg[0]);
 
 assign start_packet = start_packet_reg;
 assign error_bad_frame = error_bad_frame_reg;
@@ -247,10 +252,10 @@ end
 always @(posedge clk) begin
     state_reg <= state_next;
 
-    m_axis_tdata_reg <= m_axis_tdata_next;
-    m_axis_tvalid_reg <= m_axis_tvalid_next;
-    m_axis_tlast_reg <= m_axis_tlast_next;
-    m_axis_tuser_reg <= m_axis_tuser_next;
+    m_axis_tdata_reg  <= {m_axis_tdata_reg[(4*DATA_WIDTH)-1:0],m_axis_tdata_next};
+    m_axis_tvalid_reg <= {m_axis_tvalid_reg[3:0],m_axis_tvalid_next};
+    m_axis_tlast_reg  <= {m_axis_tlast_reg[3:0],m_axis_tlast_next};
+    m_axis_tuser_reg  <= {m_axis_tuser_reg[3:0],m_axis_tuser_next};
 
     start_packet_int_reg <= 1'b0;
     start_packet_reg <= 1'b0;
