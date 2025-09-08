@@ -129,51 +129,51 @@ module axis_gmii_rx #
 );
 // debug assign
 
-assign  state_reg_out <= state_reg;
-assign  state_next_out <= state_next;
-assign  reset_crc_out <= reset_crc;
-assign  update_crc_out <= update_crc;
-assign  mii_odd_out <= mii_odd;
-assign  in_frame_out <= in_frame;
+assign  state_reg_out = state_reg;
+assign  state_next_out = state_next;
+assign  reset_crc_out = reset_crc;
+assign  update_crc_out = update_crc;
+assign  mii_odd_out = mii_odd;
+assign  in_frame_out = in_frame;
 
-assign gmii_rxd_d0_out <= gmii_rxd_d0;
-assign gmii_rxd_d1_out <= gmii_rxd_d1;
-assign gmii_rxd_d2_out <= gmii_rxd_d2;
-assign gmii_rxd_d3_out <= gmii_rxd_d3;
-assign gmii_rxd_d4_out <= gmii_rxd_d4;
+assign gmii_rxd_d0_out = gmii_rxd_d0;
+assign gmii_rxd_d1_out = gmii_rxd_d1;
+assign gmii_rxd_d2_out = gmii_rxd_d2;
+assign gmii_rxd_d3_out = gmii_rxd_d3;
+assign gmii_rxd_d4_out = gmii_rxd_d4;
 
-assign gmii_rx_dv_d0_out <= gmii_rx_dv_d0;
-assign gmii_rx_dv_d1_out <= gmii_rx_dv_d1;
-assign gmii_rx_dv_d2_out <= gmii_rx_dv_d2;
-assign gmii_rx_dv_d3_out <= gmii_rx_dv_d3;
-assign gmii_rx_dv_d4_out <= gmii_rx_dv_d4;
+assign gmii_rx_dv_d0_out = gmii_rx_dv_d0;
+assign gmii_rx_dv_d1_out = gmii_rx_dv_d1;
+assign gmii_rx_dv_d2_out = gmii_rx_dv_d2;
+assign gmii_rx_dv_d3_out = gmii_rx_dv_d3;
+assign gmii_rx_dv_d4_out = gmii_rx_dv_d4;
 
-assign gmii_rx_er_d0_out <= gmii_rx_er_d0;
-assign gmii_rx_er_d1_out <= gmii_rx_er_d1;
-assign gmii_rx_er_d2_out <= gmii_rx_er_d2;
-assign gmii_rx_er_d3_out <= gmii_rx_er_d3;
-assign gmii_rx_er_d4_out <= gmii_rx_er_d4;
+assign gmii_rx_er_d0_out = gmii_rx_er_d0;
+assign gmii_rx_er_d1_out = gmii_rx_er_d1;
+assign gmii_rx_er_d2_out = gmii_rx_er_d2;
+assign gmii_rx_er_d3_out = gmii_rx_er_d3;
+assign gmii_rx_er_d4_out = gmii_rx_er_d4;
 
-assign m_axis_tdata_reg_out <= m_axis_tdata_reg;
-assign m_axis_tdata_next_out <= m_axis_tdata_next;
-assign m_axis_tvalid_reg_out <= m_axis_tvalid_reg;
-assign m_axis_tvalid_next_out <= m_axis_tvalid_next;
-assign m_axis_tlast_reg_out <= m_axis_tlast_reg;
-assign m_axis_tlast_next_out <= m_axis_tlast_next;
-assign m_axis_tuser_reg_out <= m_axis_tuser_reg; 
-assign m_axis_tuser_next_out <= m_axis_tuser_next;
+assign m_axis_tdata_reg_out = m_axis_tdata_reg;
+assign m_axis_tdata_next_out = m_axis_tdata_next;
+assign m_axis_tvalid_reg_out = m_axis_tvalid_reg;
+assign m_axis_tvalid_next_out = m_axis_tvalid_next;
+assign m_axis_tlast_reg_out = m_axis_tlast_reg;
+assign m_axis_tlast_next_out = m_axis_tlast_next;
+assign m_axis_tuser_reg_out = m_axis_tuser_reg; 
+assign m_axis_tuser_next_out = m_axis_tuser_next;
 
-assign start_packet_int_reg_out <= start_packet_int_reg;
-assign start_packet_reg_out <= start_packet_reg;
-assign error_bad_frame_reg_out <= error_bad_frame_reg;
-assign error_bad_frame_next_out <= error_bad_frame_next;
-assign error_bad_fcs_reg_out <= error_bad_fcs_reg;
-assign error_bad_fcs_next_out <= error_bad_fcs_next;
+assign start_packet_int_reg_out = start_packet_int_reg;
+assign start_packet_reg_out = start_packet_reg;
+assign error_bad_frame_reg_out = error_bad_frame_reg;
+assign error_bad_frame_next_out = error_bad_frame_next;
+assign error_bad_fcs_reg_out = error_bad_fcs_reg;
+assign error_bad_fcs_next_out = error_bad_fcs_next;
 
-assign [PTP_TS_WIDTH-1:0] ptp_ts_reg_out <= ptp_ts_reg;
+assign [PTP_TS_WIDTH-1:0] ptp_ts_reg_out = ptp_ts_reg;
 
-assign [31:0] crc_state_out <= crc_state;
-assign [31:0] crc_next_out  <= crc_next;
+assign [31:0] crc_state_out = crc_state;
+assign [31:0] crc_next_out  = crc_next;
 
 
 // bus width assertions
