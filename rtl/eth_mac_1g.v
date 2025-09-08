@@ -387,7 +387,7 @@ axis_gmii_tx_inst (
     .cfg_tx_enable_out(cfg_tx_enable_out),
     .start_packet_out(start_packet_out),
     .error_underflow_out(error_underflow_out),
-    .state_reg_out(state_reg_out),
+    .state_reg_out(state_reg_out_tx),
 
     .gmii_txd_out(gmii_txd_out),
     .gmii_tx_en_out(gmii_tx_en_out),
