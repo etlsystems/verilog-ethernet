@@ -193,7 +193,7 @@ localparam [2:0]
     STATE_PAYLOAD = 3'd1,
     STATE_WAIT_LAST = 3'd2;
 
-reg [2:0] state_reg = STATE_IDLE, state_next;
+reg [2:0] state_reg , state_next;
 
 // datapath control signals
 reg reset_crc;
