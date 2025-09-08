@@ -204,7 +204,7 @@ module eth_mac_1g #
     output  wire                      cfg_tx_enable_out,
     output wire                       start_packet_out,
     output wire                       error_underflow_out,
-    output wire [2:0]                      state_reg_out,
+    output wire [2:0]                      state_reg_out_tx,
 
     output wire [DATA_WIDTH-1:0]     gmii_txd_out,
     output wire                      gmii_tx_en_out,
