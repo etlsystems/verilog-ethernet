@@ -170,10 +170,10 @@ assign error_bad_frame_next_out = error_bad_frame_next;
 assign error_bad_fcs_reg_out = error_bad_fcs_reg;
 assign error_bad_fcs_next_out = error_bad_fcs_next;
 
-assign [PTP_TS_WIDTH-1:0] ptp_ts_reg_out = ptp_ts_reg;
+assign ptp_ts_reg_out = ptp_ts_reg;
 
-assign [31:0] crc_state_out = crc_state;
-assign [31:0] crc_next_out  = crc_next;
+assign crc_state_out = crc_state;
+assign crc_next_out  = crc_next;
 
 
 // bus width assertions
